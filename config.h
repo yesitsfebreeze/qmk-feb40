@@ -45,6 +45,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define AUTO_REPEAT_TIME 50
 
 #define TAP_DANCE_TIME 200 
+#define TAP_DANCE_HOLD_TIME 400 
 
 /* Mechanical locking support. Use KC_LCAP, KC_LNUM or KC_LSCR instead in keymap */
 // #define LOCKING_SUPPORT_ENABLE

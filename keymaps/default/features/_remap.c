@@ -2,6 +2,8 @@
 #include "_mods.h"
 
 uint16_t _remap_resolve_key(uint16_t keycode) {
+    _get_mods();
+
     for (int i = 0; i < _key_remap_list_size; i++) {
         _remap_key_t key = _key_remap_list[i];
         if (key.keycode != keycode) continue;
@@ -20,11 +22,11 @@ uint16_t _remap_execute(uint16_t keycode) {
     
     _remap_original_keycode = keycode;
     _remap_current_keycode = resolved_keycode;
-    
-    unregister_code(_remap_original_keycode);
-    del_mods(MOD_MASK_SHIFT);
-    register_code16(_remap_current_keycode);
+    _temp_unshift(resolved_keycode);
+    unregister_code16(keycode);
+    register_code16(resolved_keycode);
     set_mods(_mods);
+    
     return resolved_keycode; 
 }
 
@@ -38,16 +40,17 @@ bool _process_remap(uint16_t keycode, keyrecord_t* record) {
 
     uint16_t resolved_keycode = _remap_execute(keycode);
     if (resolved_keycode == KC_NO) return false;
+
     return true; 
 }
 
 bool _process_remap_release(uint16_t keycode, keyrecord_t* record) {
     if (record->event.pressed) return false;
+    if (_remap_current_keycode == KC_NO) return false;
 
-    if (keycode == _remap_original_keycode) {
-        unregister_code(_remap_current_keycode);
-        return true;
-    }
-    
-    return false;
+    unregister_code16(_remap_current_keycode);      
+    _remap_current_keycode = KC_NO;
+    _remap_original_keycode = KC_NO;
+    set_mods(_mods);
+    return true;
 }

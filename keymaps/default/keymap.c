@@ -3,30 +3,6 @@
 #include "features/_tap_dance.h"
 #include "features/_remap.h"
 
-// order is important here, add non mod remaps after mod remaps
-_remap_key_t _key_remap_list[] = {
-    REMAP_MOD(KC_ENTER, KC_BSPC, MOD_MASK_SHIFT),
-    REMAP_MOD(KC_DEL, KC_INS, MOD_MASK_SHIFT),
-    REMAP_MOD(KC_F13, KC_QUES, MOD_MASK_SHIFT),
-    REMAP(KC_F13, KC_UNDS),
-    REMAP_MOD(KC_F14, KC_MINUS, MOD_MASK_SHIFT),
-    REMAP(KC_F14, KC_KP_PLUS),
-    REMAP_MOD(KC_F15, KC_EQUAL, MOD_MASK_SHIFT),
-    REMAP(KC_F15, KC_EQUAL),
-    REMAP_MOD(KC_F16, KC_BACKSLASH, MOD_MASK_SHIFT),
-    REMAP(KC_F16, KC_SLASH),
-    REMAP_MOD(KC_F17, KC_LBRC, MOD_MASK_SHIFT),
-    REMAP(KC_F17, KC_LPRN),
-    REMAP_MOD(KC_LBRC, KC_LABK, MOD_MASK_SHIFT),
-    REMAP(KC_LBRC, KC_LCBR),
-    REMAP_MOD(KC_F18, KC_RBRC, MOD_MASK_SHIFT),
-    REMAP(KC_F18, KC_RPRN),
-    REMAP_MOD(KC_RBRC, KC_RABK, MOD_MASK_SHIFT),
-    REMAP(KC_RBRC, KC_RCBR),
-    REMAP_MOD(KC_F19, KC_AMPR, MOD_MASK_SHIFT),
-    REMAP(KC_F19, KC_PIPE),
-};
-
 enum TAP_DANCE_KEYS {
     TD_Q_AT,
     TD_W_DQUOTE,
@@ -73,36 +49,77 @@ _tap_dance _tap_dances[] = {
   TAP_DANCE_1(TD_9, KC_9, KC_RIGHT_PAREN),
   TAP_HOLD(TD_Z_CTRLZ, KC_Z, LCTL(KC_Z)),
   TAP_HOLD(TD_X_CTRLX, KC_X, LCTL(KC_X)),
-  TAP_HOLD(TD_C_CTRLC, KC_C, LCTL(KC_C)),
+  TAP_HOLD(TD_C_CTRLC, KC_C, KC_O ),
   TAP_HOLD(TD_V_CTRLV, KC_V, LCTL(KC_V)),
 };
 
-int _key_remap_list_size = sizeof(_key_remap_list) / sizeof(_key_remap_list[0]);
 int _tap_dances_size = sizeof(_tap_dances) / sizeof(_tap_dances[0]);
+
+
+enum CUSTOM_KEYS {
+    CCK_NONE = SAFE_RANGE + 128, // leaves 128 tap dance mappings
+    CCK_DEL_INS,
+    CKC_PIPE_AMPR,
+};
+
+
+// order is important here, add modded remaps FIRST
+_remap_key_t _key_remap_list[] = {
+    
+    REMAP_MOD(CCK_DEL_INS, KC_INS, MOD_MASK_SHIFT),
+    REMAP(CCK_DEL_INS, KC_DEL),
+    
+    REMAP_MOD(CKC_PIPE_AMPR, KC_B, MOD_MASK_SHIFT),
+    REMAP(CKC_PIPE_AMPR, KC_A),
+
+    REMAP_MOD(KC_ENTER, KC_BSPC, MOD_MASK_SHIFT),
+    REMAP_MOD(KC_DEL, KC_INS, MOD_MASK_SHIFT),
+    REMAP_MOD(KC_F13, KC_QUES, MOD_MASK_SHIFT),
+    REMAP(KC_F13, KC_UNDS),
+    REMAP_MOD(KC_F14, KC_MINUS, MOD_MASK_SHIFT),
+    REMAP(KC_F14, KC_KP_PLUS),
+    REMAP_MOD(KC_F15, KC_EQUAL, MOD_MASK_SHIFT),
+    REMAP(KC_F15, KC_EQUAL),
+    REMAP_MOD(KC_F16, KC_BACKSLASH, MOD_MASK_SHIFT),
+    REMAP(KC_F16, KC_SLASH),
+    REMAP_MOD(KC_F17, KC_LBRC, MOD_MASK_SHIFT),
+    REMAP(KC_F17, KC_LPRN),
+    REMAP_MOD(KC_LBRC, KC_LABK, MOD_MASK_SHIFT),
+    REMAP(KC_LBRC, KC_LCBR),
+    REMAP_MOD(KC_F18, KC_RBRC, MOD_MASK_SHIFT),
+    REMAP(KC_F18, KC_RPRN),
+    REMAP_MOD(KC_RBRC, KC_RABK, MOD_MASK_SHIFT),
+    REMAP(KC_RBRC, KC_RCBR),
+    REMAP_MOD(KC_F19, KC_AMPR, MOD_MASK_SHIFT),
+    REMAP(KC_F19, KC_PIPE),
+    REMAP_MOD(KC_COMMA, KC_MINUS, MOD_MASK_SHIFT),
+    REMAP_MOD(KC_DOT, KC_PLUS, MOD_MASK_SHIFT),
+};
+
+int _key_remap_list_size = sizeof(_key_remap_list) / sizeof(_key_remap_list[0]);
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT(
         KC_ESC, TD(TD_Q_AT), TD(TD_W_DQUOTE), KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_EQL),
-        KC_LSFT, TD(TD_A_ASTR), TD(TD_S_SQUOTE), KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_ENTER,
-        LT(1, KC_TAB), TD(TD_Z_CTRLZ), TD(TD_X_CTRLX), TD(TD_C_CTRLC), TD(TD_V_CTRLV), KC_B, KC_N, KC_M, KC_F19, KC_LSFT, KC_DEL,
-        KC_LCTL, KC_LGUI, KC_LALT, KC_NO, KC_NO, KC_SPC, KC_NO, KC_NO, KC_COMMA, KC_DOT
+        KC_TAB, TD(TD_A_ASTR), TD(TD_S_SQUOTE), KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_ENTER,
+        KC_LSFT, TD(TD_Z_CTRLZ), TD(TD_X_CTRLX), TD(TD_C_CTRLC), TD(TD_V_CTRLV), KC_B, KC_N, KC_M, KC_COMMA, KC_DOT, KC_LSFT,
+        KC_LCTL, KC_LGUI, KC_LALT, KC_NO, KC_NO, LT(1, KC_SPC), KC_NO, KC_NO, CKC_PIPE_AMPR, CCK_DEL_INS
     ),
     [1]  = LAYOUT(
         TD(TD_0), TD(TD_1), TD(TD_2), TD(TD_3), TD(TD_4), TD(TD_5), TD(TD_6), TD(TD_7), TD(TD_8), TD(TD_9), KC_F14, KC_TRNS,
-        KC_LSFT, TD(TD_LBRKTS), KC_F16, TD(TD_RBRKTS), KC_HOME, KC_END, KC_LEFT, KC_DOWN , KC_UP, KC_RIGHT, KC_BSPC,
+        KC_TRNS, TD(TD_LBRKTS), KC_F16, TD(TD_RBRKTS), KC_HOME, KC_END, KC_LEFT, KC_DOWN , KC_UP, KC_RIGHT, KC_BSPC,
         KC_TRNS, KC_TRNS, KC_TRNS, TD(TD_CLN), KC_TRNS, KC_PGUP, KC_PGDN, KC_TRNS, KC_TRNS, KC_TRNS, KC_INS,
-        QK_BOOTLOADER, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_LSFT, KC_NO, KC_NO, KC_TRNS, KC_TRNS
+        QK_BOOTLOADER, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_LSFT, KC_TRNS, KC_NO, KC_TRNS, KC_TRNS
     ),
 };
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t* record) {
-    _get_mods();
-
-    if (_process_remap_release(keycode, record)) return false;
     if (_process_tap_dance(keycode, record)) return false;
+    if (_process_remap_release(keycode, record)) return false;
     if (_process_remap(keycode, record)) return false;
     
+
     return true;
 }
 

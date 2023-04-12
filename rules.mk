@@ -10,5 +10,6 @@ NKRO_ENABLE = yes           # Enable N-Key Rollover
 # BACKLIGHT_ENABLE = yes	# Enable keyboard backlight functionality
 # RGBLIGHT_ENABLE = yes          # Enable RGB Underglow
 
+SRC += features/_mods.c
 SRC += features/_tap_dance.c
 SRC += features/_remap.c

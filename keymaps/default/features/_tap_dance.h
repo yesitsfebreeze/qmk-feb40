@@ -14,7 +14,6 @@
 
 #define TAP_HOLD(_kc, _def, _1) { .keycode = TD(_kc), .max_taps = 1, .keycodes = { _def, _1, KC_NO, KC_NO, KC_NO, KC_NO}, .hold = true } 
 
-
 typedef struct {
     uint16_t keycode;
     int max_taps;
@@ -25,19 +24,23 @@ typedef struct {
 extern _tap_dance _tap_dances[];
 extern int _tap_dances_size; 
 
-uint16_t _tap_dance_last_keycode;
 
 bool _tap_dance_available;
 bool _tap_dance_released;
+bool _tap_dance_other_key;
+uint16_t _tap_dance_last_sent_keycode;
 uint16_t _tap_dance_active_keycode;
 int _tap_dance_taps;
 uint16_t _tap_dance_time;
 int _tap_dance_max_taps;
+bool _tap_dance_hold;
 uint16_t _tap_dance_keycodes[6];
 
 void _tap_dance_assign(_tap_dance *td);
 void _tap_dance_reset(void);
+uint16_t _tap_dance_get_keycode(void);
 void _tap_dance_execute(void);
-void _tap_dance_handle(_tap_dance *td);
+void _tap_dance_release(void);
+void _tap_dance_handle(void);
 bool _process_tap_dance(uint16_t keycode, keyrecord_t *record);
 void _process_tap_dance_execute(void);
