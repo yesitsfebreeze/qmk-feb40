@@ -1,15 +1,10 @@
-# Build Options
-#   change yes to no to disable
-#
-BOOTMAGIC_ENABLE = yes      # Enable Bootmagic Lite
-MOUSEKEY_ENABLE = yes		# Mouse keys
-EXTRAKEY_ENABLE = yes		# Audio control and System control
-# CONSOLE_ENABLE = yes		# Console for debug
-# COMMAND_ENABLE = yes		# Commands for debug and configuration
-NKRO_ENABLE = yes           # Enable N-Key Rollover
-# BACKLIGHT_ENABLE = yes	# Enable keyboard backlight functionality
-# RGBLIGHT_ENABLE = yes          # Enable RGB Underglow
+# CONSOLE_ENABLE = yes
 
-SRC += features/_mods.c
-SRC += features/_tap_dance.c
+BOOTMAGIC_ENABLE = yes
+MOUSEKEY_ENABLE = yes
+EXTRAKEY_ENABLE = yes
+NKRO_ENABLE = yes
+RGB_MATRIX_ENABLE = yes
+RGB_MATRIX_DRIVER = WS2812
+# TAP_DANCE_ENABLE = yes
 SRC += features/_remap.c
