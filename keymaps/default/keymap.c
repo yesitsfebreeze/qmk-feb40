@@ -1,7 +1,7 @@
 #include QMK_KEYBOARD_H
 #include "features/_remap.h"
 #define __ NO_LED
-#include "print.h"
+// #include "print.h"
 #ifdef RGB_MATRIX_ENABLE
 
 #define RGB_MATRIX_MAX 41
@@ -24,6 +24,9 @@ led_config_t g_led_config = { {
 } };
 
 #endif
+
+
+#define KC_RGB_SWITCH RGB_TOG
 
 enum LAYERS {
     BASE,
@@ -109,8 +112,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT(
         RM(RM_ESC), KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, RM(RM_EQUAL_DOLLAR),
         KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, RM(RM_ENT_BSPC),
-        KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, RM(RM_COMMA_QUES), RM(RM_DOT_EXLM), KC_DEL,
-        KC_LCTL, KC_LGUI, KC_LALT, LT(LOWER, KC_SPC), LT(RAISE, KC_SPC), RM(RM_UNDS), RM(RM_HASH_AT), RM(RM_SLASH_BACKSLASH)
+        KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, RM(RM_UNDS), RM(RM_HASH_AT), KC_DEL,
+        KC_LCTL, KC_LGUI, KC_LALT, LT(LOWER, KC_SPC), LT(RAISE, KC_SPC), RM(RM_COMMA_QUES), RM(RM_DOT_EXLM), RM(RM_SLASH_BACKSLASH)
     ),
     [LOWER] = LAYOUT(
         KC_TRNS, KC_HOME, KC_UP, KC_END, KC_PGUP, KC_NO, KC_NO, KC_NO, RM(RM_LPAR_RPAR), RM(RM_LBCURL_RCURL), RM(RM_LBRAK_RBRAK), RM(RM_LABR_RABR),
@@ -121,12 +124,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [RAISE] = LAYOUT(
         KC_0, KC_1, KC_2, KC_3, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_EQUAL,
         KC_TRNS, KC_4, KC_5, KC_6, KC_NO, KC_NO, KC_NO, KC_NO, KC_SCLN, RM(RM_QUOT_SQUOT), KC_BSPC,
-        KC_TRNS, KC_7, KC_8, KC_9, KC_NO, KC_NO, KC_NO, KC_NO, RM(RM_COMMA_QUES), RM(RM_DOT_EXLM), KC_DEL,
-        KC_TRNS, KC_TRNS, KC_TRNS, LT(COMBO, KC_SPC), KC_TRNS, KC_NO, KC_NO, KC_NO
+        KC_TRNS, KC_7, KC_8, KC_9, KC_NO, KC_NO, KC_NO, KC_NO, KC_PMNS, KC_PPLS, KC_PAST,
+        KC_TRNS, KC_TRNS, KC_TRNS, LT(COMBO, KC_SPC), KC_TRNS, RM(RM_COMMA_QUES), RM(RM_DOT_EXLM), RM(RM_SLASH_BACKSLASH)
     ),
     [COMBO] = LAYOUT(
         KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12,
-        KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+        KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_RGB_SWITCH,
         KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
         KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, QK_BOOT, KC_NO, KC_NO
     ),
@@ -147,30 +150,8 @@ void window_switch(uint16_t keycode, keyrecord_t* record) {
     }
 } 
 
-bool process_record_user(uint16_t keycode, keyrecord_t* record) {
-    uint16_t remapped_keycode = process_remap(keycode, record); 
-    if (remapped_keycode != KC_NO) {
-        window_switch(remapped_keycode, record);
-        return false;
-    }
-    
-    window_switch(keycode, record);
-    return true;
-}
-
-uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
-    switch (keycode) {
-        case LT(RAISE, KC_SPC):
-            return TAPPING_TERM_FAST;
-        case LT(LOWER, KC_SPC): 
-            return TAPPING_TERM_FAST;
-        case LT(COMBO, KC_SPC): 
-            return TAPPING_TERM_FAST;
-        default:
-            return TAPPING_TERM;
-    }
-}
-
+int RGB_MODE = 2;
+int RGB_MODE_MAX = 2;
 uint8_t INDICATOR_R = 0;
 uint8_t INDICATOR_G = 0;
 uint8_t INDICATOR_B = 0;
@@ -208,6 +189,12 @@ HSV rgb_to_hsv(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 void set_color(uint8_t r, uint8_t g, uint8_t b) {
+    if (RGB_MODE == 0) {
+        r = 0;
+        g = 0;
+        b = 0;
+    }
+
     HSV hsv = rgb_to_hsv(r, g, b);
     rgb_matrix_sethsv_noeeprom(hsv.h, hsv.s, hsv.v);
     RGB rgb = hsv_to_rgb(hsv);
@@ -215,6 +202,61 @@ void set_color(uint8_t r, uint8_t g, uint8_t b) {
     INDICATOR_G = rgb.g;
     INDICATOR_B = rgb.b;
 }
+
+bool handle_rgb_mode(uint16_t keycode, keyrecord_t* record) {
+    if (keycode != KC_RGB_SWITCH) return false;
+
+    if (RGB_MODE == RGB_MODE_MAX) {
+        RGB_MODE = 0;
+    } else {
+        RGB_MODE++;
+    }
+
+    switch (RGB_MODE) {
+        case 0:
+            rgb_matrix_mode(RGB_MATRIX_NONE);
+            rgb_matrix_set_color_all(0, 0, 0);
+            break;
+        case 1:
+            rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            break;
+        case 2:
+            rgb_matrix_mode(RGB_MATRIX_SOLID_REACTIVE_MULTINEXUS);
+            break;
+    }
+   
+    layer_move(BASE); 
+    layer_move(COMBO);
+
+    return true;
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t* record) {
+    if (handle_rgb_mode(keycode, record)) return false;
+    
+    uint16_t remapped_keycode = process_remap(keycode, record); 
+    if (remapped_keycode != KC_NO) {
+        window_switch(remapped_keycode, record);
+        return false;
+    }
+    
+    window_switch(keycode, record);
+    return true;
+}
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LT(RAISE, KC_SPC):
+            return TAPPING_TERM_FAST;
+        case LT(LOWER, KC_SPC): 
+            return TAPPING_TERM_FAST;
+        case LT(COMBO, KC_SPC): 
+            return TAPPING_TERM_FAST;
+        default:
+            return TAPPING_TERM;
+    }
+}
+
 
 bool rgb_matrix_indicators_user(void) {
     // rgb_matrix_set_color(23, INDICATOR_R, INDICATOR_G, INDICATOR_B);

@@ -19,7 +19,8 @@
     #define RGBLIGHT_VAL_STEP 1
 
     #define RGB_MATRIX_KEYPRESSES              // enable key press effects
-
+    
+    #define ENABLE_RGB_MATRIX_NONE
     #define ENABLE_RGB_MATRIX_SOLID_COLOR
     #define ENABLE_RGB_MATRIX_SOLID_REACTIVE_SIMPLE
     #define ENABLE_RGB_MATRIX_SOLID_REACTIVE_MULTINEXUS
