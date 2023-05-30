@@ -11,15 +11,14 @@
     #define RGB_DI_PIN B3
     #define RGB_MATRIX_LED_COUNT 42
 
-    #define RGB_DISABLE_WHEN_USB_SUSPENDED     // turn off effects when suspended
-    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 255  // limits maximum brightness of LEDs to x out of 255. If not defined maximum brightness is set to 255
+    #define RGB_DISABLE_WHEN_USB_SUSPENDED
+    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 255
 
     #define RGBLIGHT_HUE_STEP 1
     #define RGBLIGHT_SAT_STEP 1
     #define RGBLIGHT_VAL_STEP 1
 
-    #define RGB_MATRIX_KEYPRESSES              // enable key press effects
-    
+    #define RGB_MATRIX_KEYPRESSES
     #define ENABLE_RGB_MATRIX_NONE
     #define ENABLE_RGB_MATRIX_SOLID_COLOR
     #define ENABLE_RGB_MATRIX_SOLID_REACTIVE_SIMPLE

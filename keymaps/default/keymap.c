@@ -25,14 +25,18 @@ led_config_t g_led_config = { {
 
 #endif
 
-
 #define KC_RGB_SWITCH RGB_TOG
+   
+#define RGB_BASE 128, 0, 255
+#define RGB_LOWER 128, 255, 64
+#define RGB_RAISE 255, 128, 0
+#define RGB_COMBO 0, 128, 255
 
 enum LAYERS {
     BASE,
     LOWER,
     RAISE,
-    COMBO
+    COMBO,
 };
 
 enum {
@@ -49,6 +53,7 @@ enum {
     RM_DOT_EXLM,
     RM_SLASH_BACKSLASH,
     RM_HASH_AT,
+    RM_DOT_COMMA,
 };
 
 uint16_t remap_key_list[][16] = {
@@ -104,34 +109,37 @@ uint16_t remap_key_list[][16] = {
     [RM_HASH_AT] = {
         REMAP(KC_HASH),
         REMAP_MOD(KC_AT, MOD_MASK_SHIFT),
+    },
+    [RM_DOT_COMMA] = {
+        REMAP(KC_DOT),
+        REMAP_MOD(KC_COMMA, MOD_MASK_SHIFT),
     }
-
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT(
         RM(RM_ESC), KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, RM(RM_EQUAL_DOLLAR),
         KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, RM(RM_ENT_BSPC),
-        KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, RM(RM_UNDS), RM(RM_HASH_AT), KC_DEL,
-        KC_LCTL, KC_LGUI, KC_LALT, LT(LOWER, KC_SPC), LT(RAISE, KC_SPC), RM(RM_COMMA_QUES), RM(RM_DOT_EXLM), RM(RM_SLASH_BACKSLASH)
+        KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, RM(RM_COMMA_QUES), RM(RM_DOT_EXLM), KC_DEL,
+        KC_LCTL, KC_LGUI, KC_LALT, LT(LOWER, KC_SPC), LT(RAISE, KC_SPC), RM(RM_UNDS), RM(RM_HASH_AT), RM(RM_SLASH_BACKSLASH)
     ),
     [LOWER] = LAYOUT(
         KC_TRNS, KC_HOME, KC_UP, KC_END, KC_PGUP, KC_NO, KC_NO, KC_NO, RM(RM_LPAR_RPAR), RM(RM_LBCURL_RCURL), RM(RM_LBRAK_RBRAK), RM(RM_LABR_RABR),
         KC_TRNS, KC_LEFT, KC_DOWN, KC_RIGHT, KC_PGDN, KC_NO, KC_NO, KC_NO, KC_SCLN, RM(RM_QUOT_SQUOT), KC_BSPC,
-        KC_TRNS, C(KC_Z), C(KC_X), C(KC_C), C(KC_V), KC_NO, KC_NO, KC_NO, KC_PMNS, KC_PPLS, KC_PAST,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, LT(COMBO, KC_SPC), KC_AMPR, KC_PIPE, KC_PSLS
+        KC_TRNS, C(KC_Z), C(KC_X), C(KC_C), C(KC_V), KC_NO, KC_NO, KC_NO, KC_AMPR, KC_PIPE, KC_DEL,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, LT(COMBO, KC_SPC), KC_PMNS, KC_PPLS, RM(RM_SLASH_BACKSLASH)
     ),
     [RAISE] = LAYOUT(
-        KC_0, KC_1, KC_2, KC_3, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_EQUAL,
-        KC_TRNS, KC_4, KC_5, KC_6, KC_NO, KC_NO, KC_NO, KC_NO, KC_SCLN, RM(RM_QUOT_SQUOT), KC_BSPC,
-        KC_TRNS, KC_7, KC_8, KC_9, KC_NO, KC_NO, KC_NO, KC_NO, KC_PMNS, KC_PPLS, KC_PAST,
-        KC_TRNS, KC_TRNS, KC_TRNS, LT(COMBO, KC_SPC), KC_TRNS, RM(RM_COMMA_QUES), RM(RM_DOT_EXLM), RM(RM_SLASH_BACKSLASH)
+        KC_0, KC_1, KC_2, KC_3, KC_PMNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_EQUAL,
+        RM(RM_DOT_COMMA), KC_4, KC_5, KC_6, KC_PPLS, KC_NO, KC_NO, KC_NO, KC_SCLN, RM(RM_QUOT_SQUOT), KC_BSPC,
+        KC_LSFT, KC_7, KC_8, KC_9, KC_NO, KC_NO, KC_NO, KC_NO, RM(RM_COMMA_QUES), RM(RM_DOT_EXLM), KC_DEL,
+        KC_TRNS, KC_TRNS, KC_TRNS, LT(COMBO, KC_SPC), KC_TRNS, KC_PMNS, KC_PPLS, RM(RM_SLASH_BACKSLASH)
     ),
     [COMBO] = LAYOUT(
         KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12,
         KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_RGB_SWITCH,
         KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
-        KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, QK_BOOT, KC_NO, KC_NO
+        KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, QK_BOOT, KC_NO, KC_NO  
     ),
 };
 
@@ -268,16 +276,16 @@ bool rgb_matrix_indicators_user(void) {
 void layer_change(uint8_t layer) {
     switch (layer) {
         case COMBO:
-            set_color(255, 128, 0);
+            set_color(RGB_COMBO);
             break;
         case LOWER:
-            set_color(128, 255, 64);
+            set_color(RGB_LOWER);
             break;
         case RAISE:
-            set_color(0, 128, 255);
+            set_color(RGB_RAISE);
             break;
         default:
-            set_color(128, 0, 255);
+            set_color(RGB_BASE);
             break;
     }
 }
