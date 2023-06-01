@@ -1,5 +1,9 @@
 #include "_remap.h"
 
+#ifdef CONSOLE_ENABLE
+#include "print.h"
+#endif
+
 uint8_t get_full_mods(void) {
     uint8_t mods = get_mods();
 #ifndef NO_ACTION_ONESHOT
@@ -9,12 +13,12 @@ uint8_t get_full_mods(void) {
 #endif
 }
 
-void remove_shift(void) {
-    del_weak_mods(MOD_MASK_SHIFT);
+void remove_mod_mask(uint8_t mask) {
+    del_weak_mods(mask);
 #ifndef NO_ACTION_ONESHOT
-    del_oneshot_mods(MOD_MASK_SHIFT);
+    del_oneshot_mods(mask);
 #endif
-    del_mods(MOD_MASK_SHIFT);
+    del_mods(mask);
 }
 
 bool is_shifted_keycode(uint16_t keycode) {
@@ -26,8 +30,12 @@ uint16_t remap_press(uint16_t keycode, keyrecord_t* record) {
     uint8_t mods = get_full_mods();
     uint16_t resoved_keycode = remap_key_list[keycode - RM(0)][MOD_INDEX(mods)];
 
+    remove_mod_mask(MOD_MASK_CTRL);
+    remove_mod_mask(MOD_MASK_ALT);
+    remove_mod_mask(MOD_MASK_GUI);
+
     if (mods & MOD_MASK_SHIFT && !is_shifted_keycode(resoved_keycode)) {
-        remove_shift();
+        remove_mod_mask(MOD_MASK_SHIFT);
     }
     
     unregister_code16(keycode);
