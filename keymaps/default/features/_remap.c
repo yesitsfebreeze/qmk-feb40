@@ -30,6 +30,16 @@ uint16_t remap_press(uint16_t keycode, keyrecord_t* record) {
     uint8_t mods = get_full_mods();
     uint16_t resoved_keycode = remap_key_list[keycode - RM(0)][MOD_INDEX(mods)];
 
+    // if we dont find any remapped keycode, the key should behave normally with its mods
+    if (resoved_keycode == KC_NO) {
+        uint16_t resoved_keycode = remap_key_list[keycode - RM(0)][0];
+        unregister_code16(keycode);
+        register_code16(resoved_keycode);
+        remapped_keycode = resoved_keycode;
+
+        return remapped_keycode;
+    } 
+
     remove_mod_mask(MOD_MASK_CTRL);
     remove_mod_mask(MOD_MASK_ALT);
     remove_mod_mask(MOD_MASK_GUI);
