@@ -1,3 +1,5 @@
+// remaps any key to any other key in any mod state
+
 #include "_remap.h"
 
 #ifdef CONSOLE_ENABLE

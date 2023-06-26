@@ -8,3 +8,5 @@ SEND_STRING_ENABLE = yes
 RGB_MATRIX_ENABLE = yes
 RGB_MATRIX_DRIVER = WS2812
 SRC += features/_remap.c
+SRC += features/_rgb.c
+SRC += features/_window_switch.c

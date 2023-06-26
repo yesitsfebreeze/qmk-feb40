@@ -1,3 +1,5 @@
+// remaps any key to any other key in any mod state
+
 #pragma once
 #include QMK_KEYBOARD_H
 
