@@ -1,16 +1,18 @@
 // handles rgb functionality
 
 #include "_rgb.h"
-#include "../layers.h"
+#include "../_layers.h"
 
 
 #ifdef RGB_MATRIX_ENABLE
 
-int RGB_MODE = 2;
-int RGB_MODE_MAX = 2;
+int RGB_MODE = 1;
+int RGB_MODE_MAX = 3;
 uint8_t INDICATOR_R = 0;
 uint8_t INDICATOR_G = 0;
 uint8_t INDICATOR_B = 0;
+
+uint8_t last_layer = BASE;
 
 #define RGB_MATRIX_MAX 41
 
@@ -79,31 +81,52 @@ void set_color(uint8_t r, uint8_t g, uint8_t b) {
   INDICATOR_B = rgb.b;
 }
 
+
+void set_rgb_mode(void) {
+  rgb_matrix_set_speed(RGB_MATRIX_ANI_SPEED);
+  rgb_matrix_disable();
+
+  switch (RGB_MODE) {
+    case 0:
+      rgb_matrix_mode(RGB_MODE_0);
+      rgb_matrix_set_color_all(0, 0, 0);
+      break;
+    case 1:
+      rgb_matrix_enable();
+      rgb_matrix_mode(RGB_MODE_1);
+      break;
+    case 2:
+      rgb_matrix_enable();
+      rgb_matrix_mode(RGB_MODE_2);
+      break;
+    case 3:
+      rgb_matrix_enable();
+      rgb_matrix_mode(RGB_MODE_3);
+      break;
+  }
+
+  uint8_t tmp_layer = last_layer - 1;
+  if (tmp_layer < 0) { 
+    tmp_layer = last_layer + 1;
+  }
+
+  layer_move(BASE);
+  layer_move(COMBO);
+}
+
 bool handle_rgb_mode(uint16_t keycode, keyrecord_t* record) {
   if (keycode != KC_RGB_SWITCH) return false;
+  // exit out early on release
+  if (!record->event.pressed) return true;
 
   if (RGB_MODE == RGB_MODE_MAX) {
     RGB_MODE = 0;
   } else {
     RGB_MODE++;
   }
-
-  switch (RGB_MODE) {
-    case 0:
-      rgb_matrix_mode(RGB_MATRIX_NONE);
-      rgb_matrix_set_color_all(0, 0, 0);
-      break;
-    case 1:
-      rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
-      break;
-    case 2:
-      rgb_matrix_mode(RGB_MATRIX_SOLID_REACTIVE_MULTINEXUS);
-      break;
-  }
   
-  layer_move(BASE); 
-  layer_move(COMBO);
-
+  set_rgb_mode();
+  
   return true;
 }
 
@@ -112,7 +135,7 @@ bool rgb_matrix_indicators_user(void) {
   return true;
 }
 
-void layer_change(uint8_t layer) {
+void layer_color_change(uint8_t layer) {
   switch (layer) {
     case COMBO:
       set_color(RGB_COMBO);
@@ -129,19 +152,18 @@ void layer_change(uint8_t layer) {
   }
 }
 
-uint8_t last_layer = BASE;
 layer_state_t layer_state_set_user(layer_state_t state) {
   uint8_t layer = get_highest_layer(state);
   if (layer == last_layer) return state;
-  layer_change(layer);
+  layer_color_change(layer);
   last_layer = layer;
   return state;
 }
 
 void init_rgb() {
-  layer_change(BASE);
-  rgb_matrix_set_speed(RGB_MATRIX_ANI_SPEED);
-  rgb_matrix_mode(RGB_MATRIX_SOLID_REACTIVE_MULTINEXUS);
+  layer_color_change(BASE);
+  set_rgb_mode();
+  layer_move(BASE);
 }
 
 #endif

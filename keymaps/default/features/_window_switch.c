@@ -1,7 +1,7 @@
 // goes to lower level if window switch combo is pressed
 
 #include "_window_switch.h"
-#include "../layers.h"
+#include "../_layers.h"
 
 bool is_in_window_switch = false;
 
