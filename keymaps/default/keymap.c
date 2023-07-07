@@ -18,7 +18,9 @@ enum {
     RM_SLASH_BACKSLASH,
     RM_PLS_MNS,
     RM_DOT_COMMA,
-    RM_Q
+    RM_Q,
+    RM_HOME,
+    RM_END,
 };
 
 uint16_t remap_key_list[][16] = {
@@ -81,11 +83,16 @@ uint16_t remap_key_list[][16] = {
     },
     [RM_Q] = {
         REMAP(KC_Q),
-        REMAP_MOD(KC_Q, MOD_MASK_SHIFT),
-        REMAP_MOD(A(KC_Q), MOD_MASK_ALT),
-        REMAP_MOD(KC_Q, MOD_MASK_GUI),
         REMAP_MOD(A(KC_F4), MOD_MASK_CTRL),
-    }
+    },
+    [RM_HOME] = {
+        REMAP(KC_HOME),
+        REMAP_MOD(KC_PGUP, MOD_MASK_CTRL),
+    },
+    [RM_END] = {
+        REMAP(KC_END),
+        REMAP_MOD(KC_PGDN, MOD_MASK_CTRL),
+    },
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -96,7 +103,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LCTL, KC_LGUI, KC_LALT, LT(LOWER, KC_SPC), LT(RAISE, KC_SPC), RM(RM_SLASH_BACKSLASH), RM(RM_PLS_MNS), RM(RM_UNDS)
     ),
     [LOWER] = LAYOUT(
-        KC_TRNS, KC_HOME, KC_UP, KC_END, RM(RM_LBRAK_LABR), RM(RM_RBRAK_RABR), KC_PMNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+        KC_TRNS, RM(RM_HOME), KC_UP, RM(RM_END), RM(RM_LBRAK_LABR), RM(RM_RBRAK_RABR), KC_PMNS, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
         KC_TRNS, KC_LEFT, KC_DOWN, KC_RIGHT, RM(RM_LPAR_LCURL), RM(RM_RPAR_RCURL), KC_PPLS, KC_NO, KC_SCLN, RM(RM_QUOT_SQUOT), KC_BSPC,
         KC_TRNS, C(KC_Z), C(KC_X), C(KC_C), C(KC_V), KC_PGDN, KC_PGUP, KC_NO, KC_TRNS, KC_TRNS, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, LT(COMBO, KC_SPC), KC_TRNS, KC_TRNS, KC_TRNS
