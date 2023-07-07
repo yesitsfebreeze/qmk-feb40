@@ -10,7 +10,7 @@ void window_switch(uint16_t keycode, keyrecord_t* record) {
 
     if (record->event.pressed) {
         if (keycode == KC_TAB) {
-            if (mods & (MOD_MASK_ALT || mods & MOD_MASK_GUI || mods & MOD_MASK_CTRL)) {
+            if ((mods & MOD_MASK_ALT) || (mods & MOD_MASK_GUI) || (mods & MOD_MASK_CTRL)) {
                 layer_move(LOWER);
                 is_in_window_switch = true;
             }
