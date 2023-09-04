@@ -7,7 +7,7 @@
 #ifdef RGB_MATRIX_ENABLE
 
 int RGB_MODE = 2;
-int RGB_MODE_MAX = 3;
+int RGB_MODE_MAX = 4;
 uint8_t INDICATOR_R = 0;
 uint8_t INDICATOR_G = 0;
 uint8_t INDICATOR_B = 0;
@@ -102,6 +102,10 @@ void set_rgb_mode(void) {
     case 3:
       rgb_matrix_enable();
       rgb_matrix_mode(RGB_MODE_3);
+      break;
+    case 4:
+      rgb_matrix_enable();
+      rgb_matrix_mode(RGB_MODE_4);
       break;
   }
 
