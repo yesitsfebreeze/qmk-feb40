@@ -104,6 +104,7 @@ void set_rgb_mode(void) {
       rgb_matrix_mode(RGB_MODE_3);
       break;
     case 4:
+      rgb_matrix_set_speed(64);
       rgb_matrix_enable();
       rgb_matrix_mode(RGB_MODE_4);
       break;
