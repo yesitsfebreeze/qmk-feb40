@@ -8,7 +8,7 @@
 #define USB_POLLING_INTERVAL_MS 1
 
 #ifdef RGB_MATRIX_ENABLE
-    #define RGB_DI_PIN B3
+    #define WS2812_DI_PIN B3
     #define RGB_MATRIX_LED_COUNT 42
 
     #define RGB_MATRIX_ANI_SPEED 128

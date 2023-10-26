@@ -5,6 +5,7 @@
 
 extern uint16_t remap_key_list[][16];
 
+#define MOD_INDEX(code) code & 0x07
 #define RM(code) (QK_USER | ((code)&0xFF))
 #define REMAP(remap) [0] = remap
 #define REMAP_MOD(remap, mod) [MOD_INDEX(mod)] = remap

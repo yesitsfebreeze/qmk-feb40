@@ -5,8 +5,8 @@
 
 #ifdef RGB_MATRIX_ENABLE
 
-#define RGB_BASE 5, 59, 255
-#define RGB_LOWER 136, 0, 255
+#define RGB_BASE 136, 0, 255
+#define RGB_LOWER 5, 59, 255
 #define RGB_RAISE 3, 255, 74
 #define RGB_COMBO 255, 111, 0
 

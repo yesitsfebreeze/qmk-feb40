@@ -30,7 +30,7 @@ bool is_shifted_keycode(uint16_t keycode) {
 
 uint16_t remap_press(uint16_t keycode, keyrecord_t* record) {
     uint8_t mods = get_full_mods();
-    uint16_t resoved_keycode = remap_key_list[keycode - RM(0)][MOD_INDEX(mods)];
+    uint16_t resoved_keycode = remap_key_list[keycode - RM(0)][mods];
 
     // if we dont find any remapped keycode, the key should behave normally with its mods
     if (resoved_keycode == KC_NO) {
