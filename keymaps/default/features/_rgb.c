@@ -1,8 +1,8 @@
 // handles rgb functionality
 
 #include "_rgb.h"
+#include "_remote_mode.h"
 #include "../_layers.h"
-
 
 #ifdef RGB_MATRIX_ENABLE
 
@@ -137,6 +137,10 @@ bool handle_rgb_mode(uint16_t keycode, keyrecord_t* record) {
 
 bool rgb_matrix_indicators_user(void) {
   rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+  if (REMOTE_ENABLED) {
+    rgb_matrix_set_color(6, 255, 255, 255);
+  }
+  
   return true;
 }
 

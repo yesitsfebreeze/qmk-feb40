@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 #include "_layers.h"
+#include "features/_remote_mode.h"
 #include "features/_remap.h"
 #include "features/_rgb.h"
 #include "features/_window_switch.h"
@@ -19,15 +20,24 @@ void keyboard_post_init_user(void) {
 bool process_record_user(uint16_t keycode, keyrecord_t* record) {
     if (handle_rgb_mode(keycode, record)) return false;
 
-    bool has_remap = false;
+    process_remote_mode(keycode, record);
+
+    bool has_change = false;
+
+    uint16_t remote_keycode = process_remote_press(keycode, record);
+    if (remote_keycode != KC_NO) {
+        has_change = true;
+        keycode = remote_keycode;
+    }
+
     uint16_t remapped_keycode = process_remap(keycode, record);
     if (remapped_keycode != KC_NO) {
-        has_remap = true;
+        has_change = true;
         keycode = remapped_keycode;
     }
     
     window_switch(keycode, record);
-    return !has_remap;
+    return !has_change;
 }
 
 // faster tapping term for space layer keys
