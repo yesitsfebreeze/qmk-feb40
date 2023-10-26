@@ -136,9 +136,10 @@ bool handle_rgb_mode(uint16_t keycode, keyrecord_t* record) {
 }
 
 bool rgb_matrix_indicators_user(void) {
-  rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
   if (REMOTE_ENABLED) {
-    rgb_matrix_set_color(6, 255, 255, 255);
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 255, 255, 255);
+  } else {
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
   }
   
   return true;
