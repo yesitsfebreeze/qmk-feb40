@@ -7,7 +7,7 @@
 #ifdef RGB_MATRIX_ENABLE
 
 int RGB_MODE = 1;
-int RGB_MODE_MAX = 2;
+int RGB_MODE_MAX = 1;
 uint8_t INDICATOR_R = 0;
 uint8_t INDICATOR_G = 0;
 uint8_t INDICATOR_B = 0;

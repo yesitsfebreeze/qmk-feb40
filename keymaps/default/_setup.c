@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 #include "_layers.h"
+#include "features/_macros.h"
 #include "features/_remote_mode.h"
 #include "features/_remap.h"
 #include "features/_rgb.h"
@@ -18,6 +19,7 @@ void keyboard_post_init_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t* record) {
+    if (process_macros(keycode, record)) return false;
     if (handle_rgb_mode(keycode, record)) return false;
 
     process_remote_mode(keycode, record);
