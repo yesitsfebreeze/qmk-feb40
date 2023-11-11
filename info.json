@@ -1,7 +1,7 @@
 {
-  "manufacturer": "IDOBAO",
-  "keyboard_name": "Abacus ID42",
-  "maintainer": "vinorodrigues",
+  "manufacturer": "febreeze",
+  "keyboard_name": "Feb40",
+  "maintainer": "febreeze",
   "bootloader": "atmel-dfu",
   "diode_direction": "COL2ROW",
   "matrix_pins": {

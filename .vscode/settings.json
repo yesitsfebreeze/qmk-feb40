@@ -5,6 +5,9 @@
     "_os_mode.h": "c",
     "_remap.h": "c",
     "_rgb.h": "c",
-    "_window_switch.h": "c"
+    "_window_switch.h": "c",
+    "_macros.h": "c",
+    "_layers.h": "c",
+    "_custom_keys.h": "c"
   }
 }

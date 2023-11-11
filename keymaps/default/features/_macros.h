@@ -1,8 +1,12 @@
 #pragma once
 #include QMK_KEYBOARD_H
 
-#define MC_AND KC_F20 
-#define MC_OR KC_F21
-#define MC_PTR KC_F22
- 
+typedef struct {
+  uint16_t key;
+  char *value;
+} MacroEntry;
+
+extern MacroEntry macro_list[];
+extern int macro_list_size;
+
 bool process_macros(uint16_t kc, keyrecord_t* rec);

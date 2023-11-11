@@ -3,11 +3,12 @@
 #include "_rgb.h"
 #include "_remote_mode.h"
 #include "../_layers.h"
+#include "../_custom_keys.h"
 
 #ifdef RGB_MATRIX_ENABLE
 
 int RGB_MODE = 1;
-int RGB_MODE_MAX = 1;
+int RGB_MODE_MAX = 2;
 uint8_t INDICATOR_R = 0;
 uint8_t INDICATOR_G = 0;
 uint8_t INDICATOR_B = 0;
@@ -67,6 +68,9 @@ HSV rgb_to_hsv(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 void set_color(uint8_t r, uint8_t g, uint8_t b) {
+  INDICATOR_R = r;
+  INDICATOR_G = g;
+  INDICATOR_B = b;
   if (RGB_MODE == 0) {
     r = 0;
     g = 0;
@@ -75,10 +79,6 @@ void set_color(uint8_t r, uint8_t g, uint8_t b) {
 
   HSV hsv = rgb_to_hsv(r, g, b);
   rgb_matrix_sethsv_noeeprom(hsv.h, hsv.s, hsv.v);
-  RGB rgb = hsv_to_rgb(hsv);
-  INDICATOR_R = rgb.r;
-  INDICATOR_G = rgb.g;
-  INDICATOR_B = rgb.b;
 }
 
 
@@ -88,12 +88,17 @@ void set_rgb_mode(void) {
 
   switch (RGB_MODE) {
     case 0:
+      rgb_matrix_enable();
       rgb_matrix_mode(RGB_MODE_0);
       rgb_matrix_set_color_all(0, 0, 0);
       break;
     case 1:
       rgb_matrix_enable();
       rgb_matrix_mode(RGB_MODE_1);
+      break;
+    case 2:
+      rgb_matrix_enable();
+      rgb_matrix_mode(RGB_MODE_2);
       break;
   }
 
@@ -107,7 +112,7 @@ void set_rgb_mode(void) {
 }
 
 bool handle_rgb_mode(uint16_t keycode, keyrecord_t* record) {
-  if (keycode != KC_RGB_SWITCH) return false;
+  if (keycode != CK_RGB) return false;
   // exit out early on release
   if (!record->event.pressed) return true;
 
@@ -123,11 +128,7 @@ bool handle_rgb_mode(uint16_t keycode, keyrecord_t* record) {
 }
 
 bool rgb_matrix_indicators_user(void) {
-  if (REMOTE_ENABLED) {
-    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 255, 255, 255);
-  } else {
-    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-  }
+  rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
   
   return true;
 }
@@ -144,7 +145,13 @@ void layer_color_change(uint8_t layer) {
       set_color(RGB_RAISE);
       break;
     default:
-      set_color(RGB_BASE);
+      if (REMOTE_ENABLED) {
+        set_color(255, 255, 255);
+        break;
+      } else {
+        set_color(RGB_BASE);
+      }
+      
       break;
   }
 }

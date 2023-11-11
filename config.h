@@ -9,9 +9,10 @@
 
 #ifdef RGB_MATRIX_ENABLE
     #define WS2812_DI_PIN B3
+    #define RGB_DI_PIN B3
     #define RGB_MATRIX_LED_COUNT 42
 
-    #define RGB_MATRIX_ANI_SPEED 42
+    #define RGB_MATRIX_ANI_SPEED 32
     #define RGB_DISABLE_WHEN_USB_SUSPENDED
 
     #define RGBLIGHT_HUE_STEP 1
