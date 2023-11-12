@@ -27,6 +27,8 @@
 #define CK_END      CK(16)
 #define CK_9        CK(17)
 
+#define CK_TEST     CK(18)
+
 #define CK_RGB      CK(30)
 #define CK_MODE     CK(31)
 #define CK_META     CK(32)
@@ -35,3 +37,6 @@
 #define MA_OR       CK(40)
 #define MA_AND      CK(41)
 #define MA_PTR      CK(42)
+
+
+extern void hook_key_change(uint16_t keycode, keyrecord_t* record);

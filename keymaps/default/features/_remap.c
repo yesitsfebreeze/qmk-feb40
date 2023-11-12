@@ -43,6 +43,7 @@ uint16_t remap_press(uint16_t kc, keyrecord_t* record) {
   unregister_code16(kc);
   register_code16(remapped_kc);
   set_mods(mods);
+  
   return remapped_kc;
 }
 

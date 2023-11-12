@@ -53,12 +53,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [RAISE] = LAYOUT(
     _______,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     CK_9,     KC_0,     _______,
-    KC_0,     KC_4,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     CK_9,               KC_0
+    KC_0,     KC_4,     KC_5,     KC_6,     _______,  _______,  _______,  _______,  KC_SCLN,  CK_QUOT,            KC_BSPC,
     _______,  KC_7,     KC_8,     CK_9,     _______,  _______,  _______,  _______,            _______,  _______,  _______,
     _______,  _______,  _______,            L_COMBO,            _______,                      _______,  _______,  _______
   ),
   [COMBO] = LAYOUT(
-    CK_MODE,  KC_MB1,   KC_MS_U,  KC_MB2,   KC_F1,    KC_F2,    KC_F3,    _______,  _______,  _______,  _______,  _______,
+    CK_MODE,  KC_MB1,   KC_MS_U,  KC_MB2,   KC_F1,    KC_F2,    KC_F3,    _______,  _______,  _______,  _______,  CK_TEST,
     CK_RGB,   KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_F4,    KC_F5,    KC_F6,    _______,  _______,  _______,            KC_ENTER,
     _______,  KC_WH_U,  KC_MB3,   KC_WH_D,  KC_F7,    KC_F8,    KC_F9,    KC_F10,             KC_F11,   KC_F12,   _______,
     _______,  _______,  _______,            _______,            _______,                      _______,  _______,  QK_BOOT
