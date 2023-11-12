@@ -27,8 +27,6 @@
 #define CK_END      CK(16)
 #define CK_9        CK(17)
 
-#define CK_TEST     CK(18)
-
 #define CK_RGB      CK(30)
 #define CK_MODE     CK(31)
 #define CK_META     CK(32)
