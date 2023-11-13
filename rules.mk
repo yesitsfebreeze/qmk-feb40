@@ -8,10 +8,7 @@ NKRO_ENABLE = yes
 SEND_STRING_ENABLE = yes
 RGB_MATRIX_ENABLE = yes
 RGB_MATRIX_DRIVER = ws2812
-SRC += features/_util.c
-SRC += features/_remote_mode.c
-SRC += features/_macros.c
-SRC += features/_remap.c
-SRC += features/_rgb.c
-SRC += features/_window_switch.c
-SRC += _setup.c
+
+SRC += src/core.c
+SRC += src/rgb.c
+SRC += src/process.c

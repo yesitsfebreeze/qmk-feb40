@@ -8,6 +8,14 @@
     "_window_switch.h": "c",
     "_macros.h": "c",
     "_layers.h": "c",
-    "_custom_keys.h": "c"
+    "_custom_keys.h": "c",
+    "_util.h": "c",
+    "_alt_tab.h": "c",
+    "_process.h": "c",
+    "_core.h": "c",
+    "process.h": "c",
+    "keys.h": "c",
+    "core.h": "c",
+    "rgb.h": "c"
   }
 }
