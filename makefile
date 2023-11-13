@@ -4,7 +4,6 @@ MAKEFLAGS += --no-print-directory
 kb=feb40
 
 push: #m="my message"
-	@echo off
 	$(eval m ?= $(if $(m),$(m),"update"))
 	@git add --all
 	@git commit -m "$(m)"
@@ -16,7 +15,7 @@ copy:
 	@if [ -e "../../${kb}_default.hex" ]; then cp "../../${kb}_default.hex" "./build/${kb}_default.hex"; fi
 
 build:
-	# @qmk compile -kb $(kb) -km default
+	@qmk compile -kb $(kb) -km default
 	@make copy -B
 
 flash: # console=true/false
