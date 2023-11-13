@@ -12,8 +12,8 @@ push: #m="my message"
 
 copy:
 	@echo Copying firmware to ./build
-	@if [ -e "../../.build/${kb}_default.bin" ]; then cp "../../${kb}_default.bin" "./build/${kb}_default.bin"; fi
-	@if [ -e "../../.build/${kb}_default.hex" ]; then cp "../../${kb}_default.hex" "./build/${kb}_default.hex"; fi
+	@if [ -e "../../.build/${kb}_default.bin" ]; then cp "../../.build/${kb}_default.bin" "./build/${kb}_default.bin"; fi
+	@if [ -e "../../.build/${kb}_default.hex" ]; then cp "../../.build/${kb}_default.hex" "./build/${kb}_default.hex"; fi
 
 build:
 	@qmk compile -kb $(kb) -km default
