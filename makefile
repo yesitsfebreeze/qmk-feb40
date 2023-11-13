@@ -15,11 +15,11 @@ push: ## [m="my message"]
 	@git commit -m "$(m)"
 	@git push
 
-build: ## [km="my_keymap"]
+build: ## [km=my_keymap]
 	@qmk compile -kb $(kb) -km $(km)
 	@make copy -B km=$(km)
 
-flash: ## [console=true|false] [km="my_keymap"]
+flash: ## [console=true|false] [km=my_keymap]
 	@qmk flash -kb $(kb) -km $(km)
 	@make copy -B km=$(km)
 ifeq ($(console),true)

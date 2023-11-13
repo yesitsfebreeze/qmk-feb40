@@ -35,10 +35,5 @@ extern uint16_t __custom_kc;
 #define L_RAISE     LT(RAISE, KC_SPC)
 #define L_COMBO     LT(COMBO, KC_SPC)
 
-// QK_KB_0 - QK_KB_31 and QK_USER_0 - QK_USER_31
 #define CK_OS       QK_KB_0
 #define CK_RGB      QK_KB_1
-#define MA_OR       QK_KB_2
-#define MA_AND      QK_KB_3
-#define MA_PTR      QK_KB_4
-#define CK_SFT_ENT  QK_KB_5

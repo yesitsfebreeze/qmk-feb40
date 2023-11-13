@@ -2,6 +2,12 @@
 #include "src/core.h"
 #include "src/process.h"
 
+// QK_KB_2 - QK_KB_31 and QK_USER_0 - QK_USER_31
+#define MA_OR    QK_KB_2
+#define MA_AND   QK_KB_3
+#define MA_PTR   QK_KB_4
+#define KC_SENT  QK_KB_5
+
 uint16_t process_remaps(uint16_t kc, Mods mods) {
   if (kc == KC_ESC && mods.ALT) return KC_TAB;
   if (kc == KC_ESC && mods.SHIFT) return KC_GRV;
@@ -23,7 +29,7 @@ uint16_t process_remaps(uint16_t kc, Mods mods) {
   if (kc == KC_END && mods.CTRL) return KC_PGDN;
   if (kc == KC_9 && mods.SHIFT) return KC_TILDE;
   if (kc == KC_MINS && mods.SHIFT) return KC_PPLS;
-  if (kc == CK_SFT_ENT) return RSFT(KC_ENT);
+  if (kc == KC_SENT) return RSFT(KC_ENT);
 
   return 0;
 }
@@ -66,7 +72,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [COMBO] = LAYOUT(
     CK_OS,    KC_MB1,   KC_MS_U,  KC_MB2,   KC_F1,    KC_F2,    KC_F3,    _______,  _______,  _______,  _______,  _______,
-    CK_RGB,   KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_F4,    KC_F5,    KC_F6,    _______,  _______,  _______,            CK_SFT_ENT,
+    CK_RGB,   KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_F4,    KC_F5,    KC_F6,    _______,  _______,  _______,            KC_SENT,
     _______,  KC_WH_U,  KC_MB3,   KC_WH_D,  KC_F7,    KC_F8,    KC_F9,    KC_F10,             KC_F11,   KC_F12,   _______,
     _______,  _______,  _______,            _______,            _______,                      _______,  _______,  QK_BOOT
   ),
