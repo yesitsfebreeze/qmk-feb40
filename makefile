@@ -1,9 +1,10 @@
-MAKEFLAGS += --no-print-directory
 .PHONY: all push copy build flash
+MAKEFLAGS += --no-print-directory
 
 kb=feb40
 
 push: #m="my message"
+	@echo Pushing to git
 	$(eval m ?= $(if $(m),$(m),"update"))
 	@git add --all
 	@git commit -m "$(m)"
@@ -11,8 +12,8 @@ push: #m="my message"
 
 copy:
 	@echo Copying firmware to ./build
-	@if [ -e "../../${kb}_default.bin" ]; then cp "../../${kb}_default.bin" "./build/${kb}_default.bin"; fi
-	@if [ -e "../../${kb}_default.hex" ]; then cp "../../${kb}_default.hex" "./build/${kb}_default.hex"; fi
+	@if [ -e "../../.build/${kb}_default.bin" ]; then cp "../../${kb}_default.bin" "./build/${kb}_default.bin"; fi
+	@if [ -e "../../.build/${kb}_default.hex" ]; then cp "../../${kb}_default.hex" "./build/${kb}_default.hex"; fi
 
 build:
 	@qmk compile -kb $(kb) -km default
