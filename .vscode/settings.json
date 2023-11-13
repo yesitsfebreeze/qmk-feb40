@@ -16,6 +16,7 @@
     "process.h": "c",
     "keys.h": "c",
     "core.h": "c",
-    "rgb.h": "c"
+    "rgb.h": "c",
+    "*.inc": "c"
   }
 }

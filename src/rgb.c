@@ -1,10 +1,11 @@
 #include "src/rgb.h"
 #include "src/core.h"
 
+
 #ifdef RGB_MATRIX_ENABLE
 
-int RGB_MODE = 1;
-int RGB_MODE_MAX = 2;
+bool RGB_INDICATOR = true;
+bool RGB_MODE = false;
 uint8_t INDICATOR_R = 0;
 uint8_t INDICATOR_G = 0;
 uint8_t INDICATOR_B = 0;
@@ -67,35 +68,19 @@ void set_color(uint8_t r, uint8_t g, uint8_t b) {
   INDICATOR_R = r;
   INDICATOR_G = g;
   INDICATOR_B = b;
-  if (RGB_MODE == 0) {
-    r = 0;
-    g = 0;
-    b = 0;
-  }
-
   HSV hsv = rgb_to_hsv(r, g, b);
   rgb_matrix_sethsv_noeeprom(hsv.h, hsv.s, hsv.v);
 }
 
-
 void set_rgb_mode(void) {
   rgb_matrix_set_speed(RGB_MATRIX_ANI_SPEED);
   rgb_matrix_disable();
+  rgb_matrix_enable();
 
-  switch (RGB_MODE) {
-    case 0:
-      rgb_matrix_enable();
-      rgb_matrix_mode(RGB_MODE_0);
-      rgb_matrix_set_color_all(0, 0, 0);
-      break;
-    case 1:
-      rgb_matrix_enable();
-      rgb_matrix_mode(RGB_MODE_1);
-      break;
-    case 2:
-      rgb_matrix_enable();
-      rgb_matrix_mode(RGB_MODE_2);
-      break;
+  if (RGB_MODE) {
+    rgb_matrix_mode(RGB_MATRIX_CUSTOM_INVERSED_REACTIVE);
+  } else {
+    rgb_matrix_mode(RGB_MATRIX_CUSTOM_REACTIVE);
   }
 
   uint8_t tmp_layer = last_layer - 1;
@@ -107,25 +92,13 @@ void set_rgb_mode(void) {
   layer_move(COMBO);
 }
 
-bool handle_rgb_mode(uint16_t kc, keyrecord_t *rec) {
-  if (kc != CK_RGB) return false;
-  // exit out early on release
-  if (!rec->event.pressed) return true;
-
-  if (RGB_MODE == RGB_MODE_MAX) {
-    RGB_MODE = 0;
-  } else {
-    RGB_MODE++;
-  }
-  
-  set_rgb_mode();
-  
-  return true;
-}
-
 bool rgb_matrix_indicators_user(void) {
-  rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-  
+  if (!RGB_INDICATOR) return true;
+  if (RGB_MODE) {
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);  
+  } else {
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+  }
   return true;
 }
 
@@ -160,10 +133,28 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
+#endif
+
 void init_rgb() {
+  #ifndef RGB_MATRIX_ENABLE
+    return;
+  #endif
   layer_color_change(BASE);
   set_rgb_mode();
   layer_move(BASE);
 }
 
-#endif
+bool handle_rgb(uint16_t kc, keyrecord_t *rec) {
+  #ifndef RGB_MATRIX_ENABLE
+    return false;
+  #endif
+  if (!rec->event.pressed) return false;
+  if (kc != CK_RGB && kc != CK_RGBI) return false;
+
+  if (kc == CK_RGB) RGB_MODE = !RGB_MODE;
+  if (kc == CK_RGBI) RGB_INDICATOR = !RGB_INDICATOR;
+  
+  set_rgb_mode();
+  
+  return true;
+}

@@ -8,19 +8,15 @@
 #define RGB_RAISE 3, 255, 74
 #define RGB_COMBO 255, 111, 0
 
-#define RGB_MODE_0 RGB_MATRIX_NONE
-#define RGB_MODE_1 RGB_MATRIX_SOLID_REACTIVE_SIMPLE
-#define RGB_MODE_2 RGB_MATRIX_SOLID_COLOR
-
 #define RGB_LAYER_INDICATOR_KEY 24
 
-extern int RGB_MODE;
-extern int RGB_MODE_MAX;
+extern bool RGB_INDICATOR;
+extern bool RGB_MODE;
 extern uint8_t INDICATOR_R;
 extern uint8_t INDICATOR_G;
 extern uint8_t INDICATOR_B;
 
-void init_rgb(void);
-bool handle_rgb_mode(uint16_t kc, keyrecord_t *rec);
-
 #endif
+
+void init_rgb(void);
+bool handle_rgb(uint16_t kc, keyrecord_t *rec);

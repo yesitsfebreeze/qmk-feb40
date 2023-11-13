@@ -29,9 +29,9 @@ uint8_t get_full_mods(void) {
 void clear_full_mods(void) {
   clear_mods();
   del_weak_mods(MOD_MASK_CSAG);
-#ifndef NO_ACTION_ONESHOT
+  #ifndef NO_ACTION_ONESHOT
     del_oneshot_mods(MOD_MASK_CSAG);
-#endif
+  #endif
   del_mods(MOD_MASK_CSAG);
 }
 
@@ -44,14 +44,14 @@ Mods get_mod_state(uint8_t mods) {
   };
 }
 
-void process_os_toggle(uint16_t kc, keyrecord_t *rec) {
+void handle_os_toggle(uint16_t kc, keyrecord_t *rec) {
   if (kc != CK_OS) return;
   if (!rec->event.pressed) return;
   OS++;
   if (OS > sizeof(enum OS_TYPES)) OS = 0;
 }
 
-void process_alt_tab(uint16_t kc, keyrecord_t *rec) {
+void handle_alt_tab(uint16_t kc, keyrecord_t *rec) {
   uint8_t mods = get_mods();
 
   if (rec->event.pressed) {
@@ -93,22 +93,22 @@ bool process_macro(uint16_t kc, uint16_t custom, uint8_t mods, keyrecord_t *rec)
 }
 
 bool process_custom_kc_press(uint16_t kc, uint16_t custom, uint8_t mods, keyrecord_t *rec) {
-  if ((IS_QK_MOD_TAP(kc) || IS_QK_LAYER_TAP(kc)) && rec->tap.count == 0) return true;
-  if (custom == KC_NO) return true;
+  if ((IS_QK_MOD_TAP(kc) || IS_QK_LAYER_TAP(kc)) && rec->tap.count == 0) return false;
+  if (custom == KC_NO) return false;
   
   clear_full_mods();
   unregister_code16(kc);
   register_code16(custom);
   __custom_kc = custom;
   set_mods(mods);
-  return false;
+  return true;
 }
 
 bool process_custom_kc_release(void) {
-  if (__custom_kc == KC_NO) return true;
+  if (__custom_kc == KC_NO) return false;
   unregister_code16(__custom_kc);
   __custom_kc = KC_NO;
-  return false;
+  return true;
 }
 
 
@@ -118,52 +118,64 @@ bool process_custom_kc_release(void) {
 
 
 void keyboard_post_init_user(void) {
-# ifdef RGB_MATRIX_ENABLE
-  init_rgb();
-# endif  
-# ifdef CONSOLE_ENABLE
+  #ifdef CONSOLE_ENABLE
     debug_enable=true;
-# endif
+  #endif
+  init_rgb();
 }
 
-bool process_record_user(uint16_t kc, keyrecord_t *rec) {
-# ifdef RGB_MATRIX_ENABLE
-  if (handle_rgb_mode(kc, rec)) return false;
-# endif  
-  
-  uint8_t mods = get_full_mods();
+bool process_record_custom(uint16_t kc, keyrecord_t *rec) {
+  bool pressed = rec->event.pressed;
   uint16_t custom = kc;
-
-  process_os_toggle(kc, rec);
-  process_alt_tab(kc, rec);  
-
+  uint8_t mods = get_full_mods();
   Mods mod_state = get_mod_state(mods);
+
+  if (handle_rgb(kc, rec)) return true;
+  handle_os_toggle(kc, rec);
+  handle_alt_tab(kc, rec);  
 
   uint16_t remapped = process_remaps(kc, mod_state);
   if (remapped != 0) custom = remapped;
   uint16_t os = process_os(custom, mod_state, OS);
   if (os != 0) custom = os;
   // after remap and os keys, check if we ended up with a macro
-  if (process_macro(kc, custom, mods, rec)) return false;
+  if (process_macro(kc, custom, mods, rec)) return true;
 
-  // if no remap happened, exit out
-  if (remapped == 0 && os == 0) return true;
-  
-  if (rec->event.pressed) {
+  // handle custom keycodes if any are present
+  if ((remapped != 0 || os != 0) && pressed) {
     return process_custom_kc_press(kc, custom, mods, rec);
-  } else {
-    return process_custom_kc_release();
   }
+  
+  return process_custom_kc_release();
+}
+
+bool process_record_user(uint16_t kc, keyrecord_t *rec) {
+  if (process_record_custom(kc, rec)) {
+    uprintf("CUSTOM SHIFT(%d) CTRL(%d) ALT(%d) GUI(%d)\n", 
+      (get_mods() & MOD_MASK_SHIFT) ? 1 : 0,
+      (get_mods() & MOD_MASK_CTRL) ? 1 : 0,
+      (get_mods() & MOD_MASK_ALT) ? 1 : 0,
+      (get_mods() & MOD_MASK_GUI) ? 1 : 0
+    );
+    return false;
+  }
+  uprintf("DEFAULT SHIFT(%d) CTRL(%d) ALT(%d) GUI(%d)\n",
+    (get_mods() & MOD_MASK_SHIFT) ? 1 : 0,
+    (get_mods() & MOD_MASK_CTRL) ? 1 : 0,
+    (get_mods() & MOD_MASK_ALT) ? 1 : 0,
+    (get_mods() & MOD_MASK_GUI) ? 1 : 0
+  );
+  return true;
 }
 
 // faster tapping term for space layer keys
 uint16_t get_tapping_term(uint16_t kc, keyrecord_t *rec) {
   switch (kc) {
-    case L_RAISE:
+    case L_RSE:
       return TAPPING_TERM_FAST;
-    case L_LOWER: 
+    case L_LWR: 
       return TAPPING_TERM_FAST;
-    case L_COMBO: 
+    case L_CMB: 
       return TAPPING_TERM_FAST;
     default:
       return TAPPING_TERM;
