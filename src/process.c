@@ -39,11 +39,17 @@ void keyboard_post_init_user(void) {
   init_rgb();
 }
 
-bool process_record_user(uint16_t kc, keyrecord_t *rec) {
+bool is_core_kc(uint16_t kc) {
   if (kc == LT_LOWER) return true;
   if (kc == LT_RAISE) return true;
   if (kc == LT_COMBO) return true;
   if (kc == QK_BOOT) return true;
+  
+  return false;
+}
+
+bool process_record_user(uint16_t kc, keyrecord_t *rec) {
+  if (is_core_kc(kc)) return true;
 
   handle_window_switch(kc, rec);
   if (handle_rgb(kc, rec)) return false;
