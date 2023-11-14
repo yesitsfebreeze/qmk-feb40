@@ -136,25 +136,24 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 #endif
 
 void init_rgb() {
-  #ifndef RGB_MATRIX_ENABLE
-    return;
+  #ifdef RGB_MATRIX_ENABLE
+    layer_color_change(BASE);
+    set_rgb_mode();
+    layer_move(BASE);
   #endif
-  layer_color_change(BASE);
-  set_rgb_mode();
-  layer_move(BASE);
 }
 
 bool handle_rgb(uint16_t kc, keyrecord_t *rec) {
-  #ifndef RGB_MATRIX_ENABLE
-    return false;
-  #endif
-  if (!rec->event.pressed) return false;
-  if (kc != CK_RGB && kc != CK_RGBI) return false;
+  #ifdef RGB_MATRIX_ENABLE
+    if (!rec->event.pressed) return false;
+    if (kc != CK_RGB && kc != CK_RGBI) return false;
 
-  if (kc == CK_RGB) RGB_MODE = !RGB_MODE;
-  if (kc == CK_RGBI) RGB_INDICATOR = !RGB_INDICATOR;
-  
-  set_rgb_mode();
-  
-  return true;
+    if (kc == CK_RGB) RGB_MODE = !RGB_MODE;
+    if (kc == CK_RGBI) RGB_INDICATOR = !RGB_INDICATOR;
+    
+    set_rgb_mode();
+    
+    return true;
+  #endif
+  return false;
 }

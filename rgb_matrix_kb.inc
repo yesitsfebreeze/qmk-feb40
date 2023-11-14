@@ -5,12 +5,16 @@ RGB_MATRIX_EFFECT(INVERSED_REACTIVE)
 
 #ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 
-static float ease_in_circ(float t) {
-  return 1 - sqrt(1 - pow(t, 2));
+static float ease(float t) {
+  float margin = 0.05;
+  float r = t * t * t * t;
+  if (r < margin) return 0;
+  if (r > 1 - margin) return 1;
+  return r;
 }
 
 static HSV reactive_math(HSV hsv, uint16_t offset) {
-  float percent = ease_in_circ((float)offset / 255.0);
+  float percent = ease((float)offset / 255.0);
   hsv.v = scale8(255 - 255 * percent, hsv.v);
   return hsv;
 }

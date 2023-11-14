@@ -12,3 +12,4 @@ RGB_MATRIX_DRIVER     = ws2812
 SRC += src/core.c
 SRC += src/rgb.c
 SRC += src/process.c
+

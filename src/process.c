@@ -1,33 +1,35 @@
 #include QMK_KEYBOARD_H
-#include "src/process.h"
 #include "src/core.h"
 #include "src/rgb.h"
 
-bool is_in_alt_tab = false;
+bool __ws_enabled = false;
+bool __ws_kc = false;
+bool __ws_ctrl_down = false;
+bool __ws_gui_down = false;
+bool __ws_alt_down = false;
 
-void handle_alt_tab(uint16_t kc, keyrecord_t *rec) {
-  uint8_t mods = get_mods();
+void handle_window_switch(uint16_t kc, keyrecord_t *rec) {
+  bool pressed = rec->event.pressed;
+  if (kc == KC_LALT || kc == KC_LALT) __ws_alt_down = pressed;
+  if (kc == KC_LGUI || kc == KC_RGUI) __ws_gui_down = pressed;
+  if (kc == KC_LCTL || kc == KC_RCTL) __ws_ctrl_down = pressed;
 
-  if (rec->event.pressed) {
-    if (kc == KC_TAB) {
-      bool alt_down = (mods & MOD_MASK_ALT);
-      bool gui_down = (mods & MOD_MASK_GUI);
-      bool ctrl_down = (mods & MOD_MASK_CTRL);
-
-      if (alt_down || gui_down || ctrl_down) {
-        layer_move(LOWER);
-        is_in_alt_tab = true;
-      }
+  if (pressed) {
+    bool any_down = __ws_alt_down || __ws_gui_down || __ws_ctrl_down;
+    if (kc == KC_TAB && any_down) {
+      layer_move(LOWER);
+      __ws_enabled = true;
+      
     }
-  } else if (is_in_alt_tab) {
-    bool alt_up = kc == KC_LALT || kc == KC_RALT;
-    bool gui_up = kc == KC_LGUI || kc == KC_RGUI;
-    bool ctrl_up = kc == KC_LCTL || kc == KC_LCTL;
-
-    if (alt_up || gui_up || ctrl_up) {
+    
+    return;
+  } else {
+    bool all_up = !__ws_alt_down && !__ws_gui_down && !__ws_ctrl_down;
+    if (__ws_enabled && all_up) {
       layer_move(BASE);
-      is_in_alt_tab = false;
+      __ws_enabled = false;
     }
+    return;
   }
 }
 
@@ -39,7 +41,7 @@ void keyboard_post_init_user(void) {
 }
 
 bool process_record_user(uint16_t kc, keyrecord_t *rec) {
-  handle_alt_tab(kc, rec);
+  handle_window_switch(kc, rec);
   if (handle_rgb(kc, rec)) return false;
   if (handle_core(kc, rec)) return false;
 
@@ -48,14 +50,6 @@ bool process_record_user(uint16_t kc, keyrecord_t *rec) {
 
 // faster tapping term for space layer keys
 uint16_t get_tapping_term(uint16_t kc, keyrecord_t *rec) {
-  switch (kc) {
-    case LT_RAISE:
-      return TAPPING_TERM_FAST;
-    case LT_LOWER: 
-      return TAPPING_TERM_FAST;
-    case LT_COMBO: 
-      return TAPPING_TERM_FAST;
-    default:
-      return TAPPING_TERM;
-  }
+  if (kc == LT_RAISE || kc == LT_LOWER || kc == LT_COMBO) return TAPPING_TERM_FAST;
+  return TAPPING_TERM;
 }

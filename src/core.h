@@ -1,5 +1,8 @@
 #pragma once
 #include QMK_KEYBOARD_H
+#ifdef CONSOLE_ENABLE
+  #include "print.h"
+#endif
 
 enum LAYERS {
   BASE,
@@ -12,7 +15,7 @@ enum LAYERS {
 #define LT_RAISE LT(2, KC_SPC)
 #define LT_COMBO LT(3, KC_SPC)
 
-extern int OS;
+extern int8_t OS;
 enum OS_TYPES {
   OS_WINDOWS,
   OS_REMOTE,
@@ -20,14 +23,25 @@ enum OS_TYPES {
 
 typedef union {
   struct {
+    bool NONE;
     bool CTRL;
     bool ALT;
     bool GUI;
     bool SHIFT;
   };
-} Mods;
+} ModState;
 
-extern uint16_t __custom_kc;
+
+typedef union {
+  struct {
+    bool pressed;
+    uint16_t kc;
+  };
+} CustomKey;
+
+extern bool __has_remap;
+extern uint16_t __target_kc;
+extern CustomKey __custom_keys[MATRIX_ROWS][MATRIX_COLS];
 
 #define CK_00 QK_KB_0
 #define CK_01 QK_KB_1
@@ -95,8 +109,8 @@ extern uint16_t __custom_kc;
 
 #define CK_OS QK_USER_31
 
-extern uint16_t process_remaps(uint16_t kc, Mods mods);
-extern uint16_t process_os(uint16_t kc, Mods mods, int os);
+extern uint16_t process_remaps(uint16_t kc, ModState ms);
+extern uint16_t process_os(uint16_t kc, ModState ms, int os);
 extern char* process_macros(uint16_t kc);
 
 bool handle_core(uint16_t kc, keyrecord_t *rec);

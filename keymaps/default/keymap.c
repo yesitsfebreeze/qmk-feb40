@@ -1,6 +1,5 @@
 #include QMK_KEYBOARD_H
 #include "src/core.h"
-#include "src/process.h"
 #include "src/rgb.h"
 
 #define KC_MB1   KC_MS_BTN1
@@ -8,38 +7,40 @@
 #define KC_MB3   KC_MS_BTN3 // MWHEEL_CLICK
 
 // CUSTOM KEY RANGE -> CK_00 - CK_56
-#define KC_SENT  CK_00
-#define MA_OR    CK_01
-#define MA_AND   CK_02
-#define MA_PTR   CK_03
+#define CK_SENT  CK_00
 
-uint16_t process_remaps(uint16_t kc, Mods mods) {
-  if (kc == KC_ESC && mods.ALT) return KC_TAB;
-  if (kc == KC_ESC && mods.SHIFT) return KC_GRV;
-  if (kc == KC_ENT && mods.SHIFT) return KC_BSPC;
-  if (kc == KC_QUOT && mods.SHIFT) return KC_QUOT;
-  if (kc == KC_QUOT) return KC_DQUO;
-  if (kc == KC_UNDS && mods.SHIFT) return KC_UNDS;
-  if (kc == KC_EQL && mods.SHIFT) return KC_EQL;
-  if (kc == KC_LBRC && mods.SHIFT) return KC_LABK;
-  if (kc == KC_RBRC && mods.SHIFT) return KC_RABK;
-  if (kc == KC_LPRN && mods.SHIFT) return KC_LCBR;
-  if (kc == KC_RPRN && mods.SHIFT) return KC_RCBR;
-  if (kc == KC_AMPR && mods.SHIFT) return MA_AND;
-  if (kc == KC_PIPE && mods.SHIFT) return MA_OR;
-  if (kc == KC_COMM && mods.SHIFT) return KC_EXLM;
-  if (kc == KC_DOT && mods.SHIFT) return KC_QUES;
-  if (kc == KC_SLASH && mods.SHIFT) return KC_BACKSLASH;
-  if (kc == KC_HOME && mods.CTRL) return KC_PGUP;
-  if (kc == KC_END && mods.CTRL) return KC_PGDN;
-  if (kc == KC_9 && mods.SHIFT) return KC_TILDE;
-  if (kc == KC_MINS && mods.SHIFT) return KC_PPLS;
-  if (kc == KC_SENT) return RSFT(KC_ENT);
+#define MA_OR    CK_31
+#define MA_AND   CK_32
+#define MA_PTR   CK_33 
 
-  return 0;
+uint16_t process_remaps(uint16_t kc, ModState ms) {
+  if (kc == KC_ESC && ms.ALT) return KC_TAB;
+  if (kc == KC_ESC && ms.SHIFT) return KC_GRV;
+  if (kc == KC_ESC && ms.SHIFT && ms.ALT) return KC_GRV;
+  if (kc == KC_ENT && ms.SHIFT) return KC_BSPC;
+  if (kc == KC_QUOT && ms.SHIFT) return KC_QUOT;
+  if (kc == KC_QUOT && ms.NONE) return KC_DQUO;
+  if (kc == KC_UNDS && ms.SHIFT) return KC_UNDS;
+  if (kc == KC_EQL && ms.SHIFT) return KC_EQL;
+  if (kc == KC_LBRC && ms.SHIFT) return KC_LABK;
+  if (kc == KC_RBRC && ms.SHIFT) return KC_RABK;
+  if (kc == KC_LPRN && ms.SHIFT) return KC_LCBR;
+  if (kc == KC_RPRN && ms.SHIFT) return KC_RCBR;
+  if (kc == KC_AMPR && ms.SHIFT) return MA_AND;
+  if (kc == KC_PIPE && ms.SHIFT) return MA_OR;
+  if (kc == KC_COMM && ms.SHIFT) return KC_EXLM;
+  if (kc == KC_DOT && ms.SHIFT) return KC_QUES;
+  if (kc == KC_SLASH && ms.SHIFT) return KC_BACKSLASH;
+  if (kc == KC_HOME && ms.CTRL) return KC_PGUP;
+  if (kc == KC_END && ms.CTRL) return KC_PGDN;
+  if (kc == KC_9 && ms.SHIFT) return KC_TILDE;
+  if (kc == KC_MINS && ms.SHIFT) return KC_PPLS;
+  if (kc == CK_SENT) return RSFT(KC_ENT);
+
+  return 0;  
 }
 
-uint16_t process_os(uint16_t kc, Mods mods, int os) {
+uint16_t process_os(uint16_t kc, ModState ms, int os) {
   if(os == OS_REMOTE) {
     if (kc == KC_LWIN) return KC_F18;
     if (kc == KC_LALT) return KC_F19;
@@ -76,11 +77,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______,  _______,  _______,            LT_COMBO,           _______,                      _______,  _______,  _______
   ),
   [COMBO] = LAYOUT(
-    CK_OS,    KC_MB1,   KC_MS_U,  KC_MB2,   KC_F1,    KC_F2,    KC_F3,    _______,  _______,  _______,  _______,  _______,
-    CK_RGB,   KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_F4,    KC_F5,    KC_F6,    _______,  _______,  _______,            KC_SENT,
-    CK_RGBI,  KC_WH_U,  KC_MB3,   KC_WH_D,  KC_F7,    KC_F8,    KC_F9,    KC_F10,             KC_F11,   KC_F12,   _______,
-    RGB_TOG,  _______,  _______,            _______,            _______,                      _______,  _______,  QK_BOOT
+    CK_OS,    KC_MB1,   KC_MS_U,  KC_MB2,   KC_F1,    KC_F2,    KC_F3,    _______,  _______,  _______,  _______,  QK_BOOT,
+    _______,  KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_F4,    KC_F5,    KC_F6,    _______,  _______,  _______,            CK_SENT,
+    _______,  KC_WH_U,  KC_MB3,   KC_WH_D,  KC_F7,    KC_F8,    KC_F9,    KC_F10,             KC_F11,   KC_F12,   _______,
+    _______,  _______,  _______,            _______,            _______,                      CK_RGB,   CK_RGBI,  RGB_TOG
   ),
 };
-
-
