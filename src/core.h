@@ -39,9 +39,15 @@ typedef union {
   };
 } CustomKey;
 
-extern bool __has_remap;
+extern bool __has_remap = false;
 extern uint16_t __target_kc;
 extern CustomKey __custom_keys[MATRIX_ROWS][MATRIX_COLS];
+
+extern uint16_t process_remaps(uint16_t kc, ModState ms);
+extern uint16_t process_os(uint16_t kc, ModState ms, int os);
+extern char* process_macros(uint16_t kc);
+
+bool handle_core(uint16_t kc, keyrecord_t *rec);
 
 #define CK_00 QK_KB_0
 #define CK_01 QK_KB_1
