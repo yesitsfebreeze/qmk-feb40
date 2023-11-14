@@ -3,7 +3,6 @@
 #include "src/rgb.h"
 
 bool __ws_enabled = false;
-bool __ws_kc = false;
 bool __ws_ctrl_down = false;
 bool __ws_gui_down = false;
 bool __ws_alt_down = false;
@@ -41,6 +40,11 @@ void keyboard_post_init_user(void) {
 }
 
 bool process_record_user(uint16_t kc, keyrecord_t *rec) {
+  if (kc == LT_LOWER) return true;
+  if (kc == LT_RAISE) return true;
+  if (kc == LT_COMBO) return true;
+  if (kc == QK_BOOT) return true;
+
   handle_window_switch(kc, rec);
   if (handle_rgb(kc, rec)) return false;
   if (handle_core(kc, rec)) return false;

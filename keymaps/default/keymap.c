@@ -18,6 +18,7 @@ uint16_t process_remaps(uint16_t kc, ModState ms) {
   if (kc == KC_ESC && ms.SHIFT) return KC_GRV;
   if (kc == KC_ESC && ms.SHIFT && ms.ALT) return KC_GRV;
   if (kc == KC_ENT && ms.SHIFT) return KC_BSPC;
+  if (kc == CK_SENT) return RSFT(KC_ENT);
   if (kc == KC_QUOT && ms.SHIFT) return KC_QUOT;
   if (kc == KC_QUOT && ms.NONE) return KC_DQUO;
   if (kc == KC_UNDS && ms.SHIFT) return KC_UNDS;
@@ -35,7 +36,6 @@ uint16_t process_remaps(uint16_t kc, ModState ms) {
   if (kc == KC_END && ms.CTRL) return KC_PGDN;
   if (kc == KC_9 && ms.SHIFT) return KC_TILDE;
   if (kc == KC_MINS && ms.SHIFT) return KC_PPLS;
-  if (kc == CK_SENT) return RSFT(KC_ENT);
 
   return 0;  
 }
@@ -77,8 +77,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______,  _______,  _______,            LT_COMBO,           _______,                      _______,  _______,  _______
   ),
   [COMBO] = LAYOUT(
-    CK_OS,    KC_MB1,   KC_MS_U,  KC_MB2,   KC_F1,    KC_F2,    KC_F3,    _______,  _______,  _______,  _______,  QK_BOOT,
-    _______,  KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_F4,    KC_F5,    KC_F6,    _______,  _______,  _______,            CK_SENT,
+    CK_OS,    KC_MB1,   KC_MS_U,  KC_MB2,   KC_F1,    KC_F2,    KC_F3,    _______,  _______,  RGB_VAD,  RGB_VAI,  QK_BOOT,
+    _______,  KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_F4,    KC_F5,    KC_F6,    _______,  RGB_HUD,  RGB_HUI,            CK_SENT,
     _______,  KC_WH_U,  KC_MB3,   KC_WH_D,  KC_F7,    KC_F8,    KC_F9,    KC_F10,             KC_F11,   KC_F12,   _______,
     _______,  _______,  _______,            _______,            _______,                      CK_RGB,   CK_RGBI,  RGB_TOG
   ),

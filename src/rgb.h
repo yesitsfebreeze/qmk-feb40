@@ -4,10 +4,11 @@
 
 #ifdef RGB_MATRIX_ENABLE
 
-#define RGB_BASE 3, 255, 74
-#define RGB_LOWER 136, 0, 255
+#define RGB_BASE 136, 0, 255
+#define RGB_LOWER 3, 255, 74
 #define RGB_RAISE 5, 59, 255
 #define RGB_COMBO 255, 111, 0
+#define RGB_REMOTE 255, 255, 255
 
 #define RGB_LAYER_INDICATOR_KEY 24
 

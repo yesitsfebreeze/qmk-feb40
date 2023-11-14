@@ -39,7 +39,7 @@ typedef union {
   };
 } CustomKey;
 
-extern bool __has_remap = false;
+extern bool __has_remap;
 extern uint16_t __target_kc;
 extern CustomKey __custom_keys[MATRIX_ROWS][MATRIX_COLS];
 
