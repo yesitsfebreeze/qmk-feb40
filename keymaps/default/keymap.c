@@ -41,7 +41,7 @@ uint16_t process_remaps(uint16_t kc, ModState ms) {
 }
 
 uint16_t process_os(uint16_t kc, ModState ms, int os) {
-  if(os == OS_REMOTE) {
+  if(os == OS_REM) {
     if (kc == KC_LWIN) return KC_F18;
     if (kc == KC_LALT) return KC_F19;
   }

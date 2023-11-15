@@ -114,7 +114,7 @@ void layer_color_change(uint8_t layer) {
       set_color(RGB_RAISE);
       break;
     default:
-      if (OS == OS_REMOTE) {
+      if (OS == OS_REM) {
         set_color(RGB_REMOTE);
         break;
       } else {
