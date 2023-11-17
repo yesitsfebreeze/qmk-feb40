@@ -36,7 +36,7 @@ ModState get_mod_state(uint8_t mods) {
 bool handle_os_cycle(uint16_t kc, keyrecord_t *rec) {
   if (kc != CK_OS || !rec->event.pressed) return false;
   OS++;
-  if (OS > sizeof(enum OS_TYPES)) OS = 0;
+  OS = OS % OS_LAST;
   return true;
 }
 

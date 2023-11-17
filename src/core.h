@@ -19,6 +19,7 @@ extern int8_t OS;
 enum OS_TYPES {
   OS_WIN,
   OS_REM,
+  OS_LAST,
 };
 
 typedef union {
