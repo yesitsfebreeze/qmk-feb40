@@ -1,6 +1,6 @@
 #include "src/core.h"
 
-int8_t OS = OS_WINDOWS;
+int8_t OS = OS_WIN;
 
 bool __has_remap = false;
 uint16_t __target_kc = 0;
