@@ -68,11 +68,13 @@ bool handle_remap(uint16_t kc, uint8_t mods, keyrecord_t *rec) {
     if (!__has_remap) return false;
     custom_key->pressed = true;
     custom_key->kc = __target_kc;
+    custom_key->mods = MOD_BIT(__target_kc);
 
     unregister_code16(kc);
     remove_mod_mask(MOD_MASK_CSAG);
     register_code16(custom_key->kc);
     set_mods(mods);
+    register_mods(custom_key->mods)
 
     return true;
   }
@@ -80,6 +82,7 @@ bool handle_remap(uint16_t kc, uint8_t mods, keyrecord_t *rec) {
   if (!pressed && custom_key->pressed) {
     custom_key->pressed = false;
     unregister_code16(custom_key->kc);
+    unregister_mods(custom_key->mods);
     return true;
   }
 

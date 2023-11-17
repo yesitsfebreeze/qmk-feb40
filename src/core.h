@@ -36,6 +36,7 @@ typedef union {
   struct {
     bool pressed;
     uint16_t kc;
+    uint8_t mods;
   };
 } CustomKey;
 
