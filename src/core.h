@@ -11,9 +11,9 @@ enum LAYERS {
   COMBO,
 };
 
-#define LT_LOWER LT(1, KC_SPC)
-#define LT_RAISE LT(2, KC_SPC)
-#define LT_COMBO LT(3, KC_SPC)
+#define LT_L LT(1, KC_SPC)
+#define LT_R LT(2, KC_SPC)
+#define LT_C LT(3, KC_SPC)
 
 extern int8_t OS;
 enum OS_TYPES {

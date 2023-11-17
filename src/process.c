@@ -40,9 +40,9 @@ void keyboard_post_init_user(void) {
 }
 
 bool is_core_kc(uint16_t kc) {
-  if (kc == LT_LOWER) return true;
-  if (kc == LT_RAISE) return true;
-  if (kc == LT_COMBO) return true;
+  if (kc == LT_L) return true;
+  if (kc == LT_R) return true;
+  if (kc == LT_C) return true;
   if (kc == QK_BOOT) return true;
   
   return false;
@@ -60,6 +60,6 @@ bool process_record_user(uint16_t kc, keyrecord_t *rec) {
 
 // faster tapping term for space layer keys
 uint16_t get_tapping_term(uint16_t kc, keyrecord_t *rec) {
-  if (kc == LT_RAISE || kc == LT_LOWER || kc == LT_COMBO) return TAPPING_TERM_FAST;
+  if (kc == LT_R || kc == LT_L || kc == LT_C) return TAPPING_TERM_FAST;
   return TAPPING_TERM;
 }
