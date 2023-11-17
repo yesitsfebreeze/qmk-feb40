@@ -74,7 +74,7 @@ bool handle_remap(uint16_t kc, uint8_t mods, keyrecord_t *rec) {
     remove_mod_mask(MOD_MASK_CSAG);
     register_code16(custom_key->kc);
     set_mods(mods);
-    register_mods(custom_key->mods)
+    register_mods(custom_key->mods);
 
     return true;
   }
