@@ -66,13 +66,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [LOWER] = LAYOUT(
     _______,  KC_HOME,  KC_UP,    KC_END,   KC_LBRC,  KC_RBRC,  _______,  _______,  KC_AMPR,  KC_PIPE,  MA_PTR,   _______,
-    _______,  KC_LEFT,  KC_DOWN,  KC_RIGHT, KC_LPRN,  KC_RPRN,  _______,  _______,  KC_SCLN,  KC_QUOT,            KC_BSPC,
+    _______,  KC_LEFT,  KC_DOWN,  KC_RIGHT, KC_LPRN,  KC_RPRN,  _______,  _______,  KC_QUOT,  KC_SCLN,            KC_BSPC,
     _______,  C(KC_Z),  C(KC_X),  C(KC_C),  C(KC_V),  _______,  _______,  _______,            _______,  _______,  _______,
     _______,  _______,  _______,            _______,            LT_COMBO,                     _______,  _______,  _______
   ),
   [RAISE] = LAYOUT(
     _______,  KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     _______,
-    KC_0,     KC_4,     KC_5,     KC_6,     _______,  _______,  _______,  _______,  KC_SCLN,  KC_QUOT,            KC_BSPC,
+    KC_0,     KC_4,     KC_5,     KC_6,     _______,  _______,  _______,  _______,  KC_QUOT,  KC_SCLN,            KC_BSPC,
     _______,  KC_7,     KC_8,     KC_9,     _______,  _______,  _______,  _______,            _______,  _______,  _______,
     _______,  _______,  _______,            LT_COMBO,           _______,                      _______,  _______,  _______
   ),
