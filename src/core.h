@@ -26,11 +26,28 @@ typedef union {
   struct {
     bool NONE;
     bool CTRL;
+    bool CTRL_L;
+    bool CTRL_R;
     bool ALT;
+    bool ALT_L;
+    bool ALT_R;
     bool GUI;
+    bool GUI_L;
+    bool GUI_R;
     bool SHIFT;
-  };
+    bool SHIFT_L;
+    bool SHIFT_R;
+    };
 } ModState;
+
+#define MOD_MASK_CTRL_L (MOD_BIT(KC_LCTL))
+#define MOD_MASK_CTRL_R (MOD_BIT(KC_RCTL))
+#define MOD_MASK_ALT_L (MOD_BIT(KC_LALT))
+#define MOD_MASK_ALT_R (MOD_BIT(KC_RALT))
+#define MOD_MASK_GUI_L (MOD_BIT(KC_LGUI))
+#define MOD_MASK_GUI_R (MOD_BIT(KC_RGUI))
+#define MOD_MASK_SHIFT_L (MOD_BIT(KC_LSFT))
+#define MOD_MASK_SHIFT_R (MOD_BIT(KC_RSFT))
 
 
 typedef union {

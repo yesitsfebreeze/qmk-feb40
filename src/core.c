@@ -27,9 +27,17 @@ ModState get_mod_state(uint8_t mods) {
   return (ModState) {
     .NONE = mods == 0,
     .CTRL = mods & MOD_MASK_CTRL,
+    .CTRL_L = mods & MOD_MASK_CTRL_L,
+    .CTRL_R = mods & MOD_MASK_CTRL_R,
     .ALT = mods & MOD_MASK_ALT,
+    .ALT_L = mods & MOD_MASK_ALT_L,
+    .ALT_R = mods & MOD_MASK_ALT_R,
     .GUI = mods & MOD_MASK_GUI,
+    .GUI_L = mods & MOD_MASK_GUI_L,
+    .GUI_R = mods & MOD_MASK_GUI_R,
     .SHIFT = mods & MOD_MASK_SHIFT,
+    .SHIFT_L = mods & MOD_MASK_SHIFT_L,
+    .SHIFT_R = mods & MOD_MASK_SHIFT_R,
   };
 }
 
