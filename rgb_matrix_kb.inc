@@ -26,10 +26,12 @@ static HSV reactive_math_inversed(HSV hsv, uint16_t offset) {
 }
 
 static bool REACTIVE(effect_params_t* params) {
+  RGB_MATRIX_USE_LIMITS(led_min, led_max);
   return effect_runner_reactive(params, &reactive_math);
 }
 
 static bool INVERSED_REACTIVE(effect_params_t* params) {
+  RGB_MATRIX_USE_LIMITS(led_min, led_max);
   return effect_runner_reactive(params, &reactive_math_inversed);
 }
 
