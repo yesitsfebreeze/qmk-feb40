@@ -50,13 +50,14 @@ bool is_core_kc(uint16_t kc) {
 
 bool process_record_user(uint16_t kc, keyrecord_t *rec) {
   if (is_core_kc(kc)) return true;
-  handle_core_pre(kc, rec);
+  bool can_continue = true;
+  if (handle_core(kc, rec)) can_continue = false;
+  kc = get_current_keycode();
 
-  handle_window_switch(kc, rec);
   if (handle_rgb(kc, rec)) return false;
-  if (handle_core(kc, rec)) return false;
+  handle_window_switch(kc, rec);
 
-  return true;
+  return can_continue;
 }
 
 // faster tapping term for space layer keys

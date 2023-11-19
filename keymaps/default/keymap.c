@@ -36,7 +36,7 @@ uint16_t process_remaps(uint16_t kc, ModState ms) {
   if (kc == KC_END && ms.CTRL) return KC_PGDN;
   if (kc == KC_9 && ms.SHIFT) return KC_TILDE;
   if (kc == KC_MINS && ms.SHIFT) return KC_PPLS;
-
+        
   return CK_NO;  
 }
 

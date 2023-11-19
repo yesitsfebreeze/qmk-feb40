@@ -35,24 +35,16 @@ typedef union {
   struct {
     bool pressed;
     uint16_t kc;
-    uint8_t mods;
   };
 } CustomKey;
-
-extern bool __has_remap;
-extern uint16_t __remap_kc;
-extern CustomKey __custom_keys[MATRIX_ROWS][MATRIX_COLS];
 
 extern uint16_t process_remaps(uint16_t kc, ModState ms);
 extern uint16_t process_os(uint16_t kc, ModState ms, int os);
 extern char* process_macros(uint16_t kc);
 
-void remove_mod_mask(uint8_t mask);
-
-void handle_core_pre(uint16_t kc, keyrecord_t *rec);
 bool handle_core(uint16_t kc, keyrecord_t *rec);
-uint16_t get_remapped_keycode(void);
-ModState get_mod_state(void);
+uint16_t get_current_keycode(void);
+ModState get_current_mod_state(void);
 
 #define CK_00 QK_KB_0
 #define CK_01 QK_KB_1
@@ -118,5 +110,3 @@ ModState get_mod_state(void);
 #define CK_INTERN_4 QK_USER_29
 #define CK_INTERN_5 QK_USER_30
 
-#define CK_OS QK_USER_31
-#define CK_NO QK_UNICODE_MAX

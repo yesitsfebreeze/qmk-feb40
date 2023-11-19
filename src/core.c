@@ -2,45 +2,62 @@
 
 int8_t OS = OS_WIN;
 
-bool __has_remap = false;
-uint16_t __remap_kc = CK_NO;
-CustomKey __custom_keys[MATRIX_ROWS][MATRIX_COLS] = {};
-uint8_t __mods_to_remove = 0;
+bool has_remap = false;
+uint16_t current_kc = CK_NO;
+ModState remap_mod_state = {}; 
+CustomKey custom_keys[MATRIX_ROWS][MATRIX_COLS] = {};
 
-uint8_t _get_full_mods(void) {
+ModState get_current_mod_state() {
   uint8_t mods = get_mods();
-  #ifndef NO_ACTION_ONESHOT
-    return (uint8_t)(mods | get_weak_mods() | get_oneshot_mods());
-  #else
-    return (uint8_t)(mods | get_weak_mods());
-  #endif
+  return (ModState) {
+    .NONE     = (mods == 0),
+    .CTRL     = (mods & MOD_MASK_CTRL),
+    .CTRL_L   = (mods & MOD_MASK_CTRL_L),
+    .CTRL_R   = (mods & MOD_MASK_CTRL_R),
+    .ALT      = (mods & MOD_MASK_ALT),
+    .ALT_L    = (mods & MOD_MASK_ALT_L),
+    .ALT_R    = (mods & MOD_MASK_ALT_R),
+    .GUI      = (mods & MOD_MASK_GUI),
+    .GUI_L    = (mods & MOD_MASK_GUI_L),
+    .GUI_R    = (mods & MOD_MASK_GUI_R),
+    .SHIFT    = (mods & MOD_MASK_SHIFT),
+    .SHIFT_L  = (mods & MOD_MASK_SHIFT_L),
+    .SHIFT_R  = (mods & MOD_MASK_SHIFT_R),
+  };
 }
 
-void _remove_mod_mask(uint8_t mask) {
-  del_weak_mods(mask);
-  #ifndef NO_ACTION_ONESHOT
-    del_oneshot_mods(mask);
-  #endif
+void _handle_custom_mod_mask(uint16_t kc, bool state) {
+  if (kc == KC_LCTL) remap_mod_state.CTRL   = remap_mod_state.CTRL_L  = state;
+  if (kc == KC_RCTL) remap_mod_state.CTRL   = remap_mod_state.CTRL_R  = state;
+  if (kc == KC_LGUI) remap_mod_state.GUI    = remap_mod_state.GUI_L   = state;
+  if (kc == KC_RGUI) remap_mod_state.GUI    = remap_mod_state.GUI_R   = state;
+  if (kc == KC_LALT) remap_mod_state.ALT    = remap_mod_state.ALT_L   = state;
+  if (kc == KC_RALT) remap_mod_state.ALT    = remap_mod_state.ALT_R   = state;
+  if (kc == KC_LSFT) remap_mod_state.SHIFT  = remap_mod_state.SHIFT_L = state;
+  if (kc == KC_RSFT) remap_mod_state.SHIFT  = remap_mod_state.SHIFT_R = state;
+}
+
+void _set_mod_state(bool state, uint8_t mask) {
+  if (state) return add_mods(mask);
   del_mods(mask);
 }
 
-ModState get_mod_state() {
-  uint8_t mods = _get_full_mods();
-  return (ModState) {
-    .NONE = (mods == 0),
-    .CTRL = (mods & MOD_MASK_CTRL),
-    .CTRL_L = (mods & MOD_MASK_CTRL_L),
-    .CTRL_R = (mods & MOD_MASK_CTRL_R),
-    .ALT = (mods & MOD_MASK_ALT),
-    .ALT_L = (mods & MOD_MASK_ALT_L),
-    .ALT_R = (mods & MOD_MASK_ALT_R),
-    .GUI = (mods & MOD_MASK_GUI),
-    .GUI_L = (mods & MOD_MASK_GUI_L),
-    .GUI_R = (mods & MOD_MASK_GUI_R),
-    .SHIFT = (mods & MOD_MASK_SHIFT),
-    .SHIFT_L = (mods & MOD_MASK_SHIFT_L),
-    .SHIFT_R = (mods & MOD_MASK_SHIFT_R),
-  };
+void _set_remap_mod_state(void) {
+  _set_mod_state(remap_mod_state.CTRL_L, MOD_MASK_CTRL_L);
+  _set_mod_state(remap_mod_state.CTRL_R, MOD_MASK_CTRL_R);
+  _set_mod_state(remap_mod_state.CTRL, MOD_MASK_CTRL);
+  
+  _set_mod_state(remap_mod_state.GUI_L, MOD_MASK_GUI_L);
+  _set_mod_state(remap_mod_state.GUI_R, MOD_MASK_GUI_R);
+  _set_mod_state(remap_mod_state.GUI, MOD_MASK_GUI);
+
+  _set_mod_state(remap_mod_state.ALT_L, MOD_MASK_ALT_L);
+  _set_mod_state(remap_mod_state.ALT_R, MOD_MASK_ALT_R);
+  _set_mod_state(remap_mod_state.ALT, MOD_MASK_ALT);
+
+  _set_mod_state(remap_mod_state.SHIFT_L, MOD_MASK_SHIFT_L);
+  _set_mod_state(remap_mod_state.SHIFT_R, MOD_MASK_SHIFT_R);
+  _set_mod_state(remap_mod_state.SHIFT, MOD_MASK_SHIFT);
 }
 
 bool handle_os_cycle(uint16_t kc, keyrecord_t *rec) {
@@ -50,91 +67,76 @@ bool handle_os_cycle(uint16_t kc, keyrecord_t *rec) {
   return true;
 }
 
-bool handle_macro(uint16_t kc, uint8_t mods, keyrecord_t *rec) {
-  char* macro = process_macros(__remap_kc);
+bool handle_macro(uint16_t kc, keyrecord_t *rec) {
+  char* macro = process_macros(current_kc);
   if (macro == NULL || *macro == '\0' || !rec->event.pressed) return false;
 
-  _remove_mod_mask(MOD_MASK_CSAG);
-
   unregister_code16(kc);
-  unregister_code16(__remap_kc);
-
+  unregister_code16(current_kc);
   send_string(macro);
-  set_mods(mods);
 
   return true;
 }
 
-bool _is_mod_key(uint16_t kc) {
-  if (kc == KC_LCTL) return true;
-  if (kc == KC_RCTL) return true;
-  if (kc == KC_LGUI) return true;
-  if (kc == KC_RGUI) return true;
-  if (kc == KC_LALT) return true;
-  if (kc == KC_RALT) return true;
-  if (kc == KC_LSFT) return true;
-  if (kc == KC_RSFT) return true;
-  return false;
-}
-
-bool handle_remap(uint16_t kc, uint8_t mods, keyrecord_t *rec) {
+bool handle_remap(uint16_t kc, keyrecord_t *rec) {
   bool pressed = rec->event.pressed;
-
-  CustomKey *custom_key = &__custom_keys[rec->event.key.row][rec->event.key.col];
+  CustomKey *custom_key = &custom_keys[rec->event.key.row][rec->event.key.col];
 
   if (pressed && !custom_key->pressed) {
-    if (!__has_remap) return false;
+    if (!has_remap) return false;
     custom_key->pressed = true;
-    custom_key->kc = __remap_kc;
-    custom_key->mods = (_is_mod_key(__remap_kc)) ? MOD_BIT(__remap_kc) : 0;
-    __mods_to_remove = (_is_mod_key(kc)) ? MOD_BIT(kc) : 0;
+    custom_key->kc = current_kc;
+    _handle_custom_mod_mask(kc, false);
+    _handle_custom_mod_mask(custom_key->kc, true);
     unregister_code16(kc);
-    _remove_mod_mask(MOD_MASK_CSAG);
     register_code16(custom_key->kc);
-    set_mods(mods);
-    register_mods(custom_key->mods);
-    _remove_mod_mask(__mods_to_remove);
+
     return true;
   }
-
+  
   if (!pressed && custom_key->pressed) {
     custom_key->pressed = false;
     unregister_code16(custom_key->kc);
-    unregister_mods(custom_key->mods);
+    _handle_custom_mod_mask(custom_key->kc, false);
+
     return true;
   }
 
   return false;
-}
-
-void handle_core_pre(uint16_t kc, keyrecord_t *rec) {
-  _remove_mod_mask(__mods_to_remove);
-  __mods_to_remove = 0;
 }
 
 bool handle_core(uint16_t kc, keyrecord_t *rec) {
   if (handle_os_cycle(kc, rec)) return false;
   if ((IS_QK_MOD_TAP(kc) || IS_QK_LAYER_TAP(kc)) && rec->tap.count == 0) return false;
 
-  __has_remap = false;
-  __remap_kc = kc;
-  ModState ms = get_mod_state();
+  bool handled = false;
+  has_remap = false;
+  current_kc = kc;
+  remap_mod_state = get_current_mod_state();
+  del_mods(MOD_MASK_CSAG);
 
-  uint16_t remap = process_remaps(__remap_kc, ms);
-  if (remap != CK_NO) __remap_kc = remap;
+  if (rec->event.pressed) {
+    _handle_custom_mod_mask(kc, true);
+  } else {
+    _handle_custom_mod_mask(kc, false);
+  }
 
-  uint16_t os = process_os(__remap_kc, ms, OS);
-  if (os != CK_NO) __remap_kc = os;
+  uint16_t remap = process_remaps(current_kc, remap_mod_state);
+  if (remap != CK_NO) current_kc = remap;
 
-  __has_remap = (remap != CK_NO || os != CK_NO);
-  if (__has_remap && __remap_kc == KC_NO) return true;
+  uint16_t os = process_os(current_kc, remap_mod_state, OS);
+  if (os != CK_NO) current_kc = os;
 
-  uint8_t mods = _get_full_mods();
-  if (handle_macro(kc, mods, rec)) return true;
+  has_remap = (remap != CK_NO || os != CK_NO);
 
-  return handle_remap(kc, mods, rec);
+  if (has_remap && current_kc == KC_NO) handled = true;
+  if (!handled && handle_macro(kc, rec))  handled = true;
+  if (!handled && handle_remap(kc, rec))  handled = true;
+    
+  _set_remap_mod_state();
+  return handled;
 }
 
-uint16_t get_remapped_keycode(void) {
-  return __remap_kc;
+uint16_t get_current_keycode(void) {
+  return current_kc;
 }
