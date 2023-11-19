@@ -1,26 +1,8 @@
 #pragma once
 #include QMK_KEYBOARD_H
-#ifdef CONSOLE_ENABLE
-  #include "print.h"
-#endif
-
-enum LAYERS {
-  BASE,
-  LOWER,
-  RAISE,  
-  COMBO,
-};
-
-#define LT_L LT(1, KC_SPC)
-#define LT_R LT(2, KC_SPC)
-#define LT_C LT(3, KC_SPC)
+#include "core_defines.h"
 
 extern int8_t OS;
-enum OS_TYPES {
-  OS_WIN,
-  OS_REM,
-  OS_LAST,
-};
 
 typedef union {
   struct {
@@ -37,7 +19,7 @@ typedef union {
     bool SHIFT;
     bool SHIFT_L;
     bool SHIFT_R;
-  };
+    };
 } ModState;
 
 #define MOD_MASK_CTRL_L (MOD_BIT(KC_LCTL))
@@ -49,7 +31,6 @@ typedef union {
 #define MOD_MASK_SHIFT_L (MOD_BIT(KC_LSFT))
 #define MOD_MASK_SHIFT_R (MOD_BIT(KC_RSFT))
 
-
 typedef union {
   struct {
     bool pressed;
@@ -59,14 +40,19 @@ typedef union {
 } CustomKey;
 
 extern bool __has_remap;
-extern uint16_t __target_kc;
+extern uint16_t __remap_kc;
 extern CustomKey __custom_keys[MATRIX_ROWS][MATRIX_COLS];
 
 extern uint16_t process_remaps(uint16_t kc, ModState ms);
 extern uint16_t process_os(uint16_t kc, ModState ms, int os);
 extern char* process_macros(uint16_t kc);
 
+void remove_mod_mask(uint8_t mask);
+
+void handle_core_pre(uint16_t kc, keyrecord_t *rec);
 bool handle_core(uint16_t kc, keyrecord_t *rec);
+uint16_t get_remapped_keycode(void);
+ModState get_mod_state(void);
 
 #define CK_00 QK_KB_0
 #define CK_01 QK_KB_1
@@ -133,9 +119,4 @@ bool handle_core(uint16_t kc, keyrecord_t *rec);
 #define CK_INTERN_5 QK_USER_30
 
 #define CK_OS QK_USER_31
-
-extern uint16_t process_remaps(uint16_t kc, ModState ms);
-extern uint16_t process_os(uint16_t kc, ModState ms, int os);
-extern char* process_macros(uint16_t kc);
-
-bool handle_core(uint16_t kc, keyrecord_t *rec);
+#define CK_NO QK_UNICODE_MAX
