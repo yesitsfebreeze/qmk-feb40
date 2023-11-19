@@ -87,7 +87,7 @@ bool handle_remap(uint16_t kc, uint8_t mods, keyrecord_t *rec) {
     custom_key->pressed = true;
     custom_key->kc = __remap_kc;
     custom_key->mods = (_is_mod_key(__remap_kc)) ? MOD_BIT(__remap_kc) : 0;
-    __mods_to_remove = MOD_BIT(kc);
+    __mods_to_remove = (_is_mod_key(kc)) ? MOD_BIT(kc) : 0;
     unregister_code16(kc);
     _remove_mod_mask(MOD_MASK_CSAG);
     register_code16(custom_key->kc);
