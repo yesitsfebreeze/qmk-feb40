@@ -45,19 +45,15 @@ void _set_mod_state(bool state, uint8_t mask) {
 void _set_remap_mod_state(void) {
   _set_mod_state(remap_mod_state.CTRL_L, MOD_MASK_CTRL_L);
   _set_mod_state(remap_mod_state.CTRL_R, MOD_MASK_CTRL_R);
-  _set_mod_state(remap_mod_state.CTRL, MOD_MASK_CTRL);
   
   _set_mod_state(remap_mod_state.GUI_L, MOD_MASK_GUI_L);
   _set_mod_state(remap_mod_state.GUI_R, MOD_MASK_GUI_R);
-  _set_mod_state(remap_mod_state.GUI, MOD_MASK_GUI);
 
   _set_mod_state(remap_mod_state.ALT_L, MOD_MASK_ALT_L);
   _set_mod_state(remap_mod_state.ALT_R, MOD_MASK_ALT_R);
-  _set_mod_state(remap_mod_state.ALT, MOD_MASK_ALT);
 
   _set_mod_state(remap_mod_state.SHIFT_L, MOD_MASK_SHIFT_L);
   _set_mod_state(remap_mod_state.SHIFT_R, MOD_MASK_SHIFT_R);
-  _set_mod_state(remap_mod_state.SHIFT, MOD_MASK_SHIFT);
 }
 
 bool handle_os_cycle(uint16_t kc, keyrecord_t *rec) {
@@ -129,7 +125,7 @@ bool handle_core(uint16_t kc, keyrecord_t *rec) {
 
   has_remap = (remap != CK_NO || os != CK_NO);
 
-  if (has_remap && current_kc == KC_NO) handled = true;
+  if (has_remap && current_kc == KC_NO)   handled = true;
   if (!handled && handle_macro(kc, rec))  handled = true;
   if (!handled && handle_remap(kc, rec))  handled = true;
     
