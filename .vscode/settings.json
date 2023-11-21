@@ -17,6 +17,7 @@
     "keys.h": "c",
     "core.h": "c",
     "rgb.h": "c",
-    "*.inc": "c"
+    "*.inc": "c",
+    "keymap.h": "c"
   }
 }

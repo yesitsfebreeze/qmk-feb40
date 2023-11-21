@@ -19,8 +19,8 @@ typedef union {
     bool SHIFT;
     bool SHIFT_L;
     bool SHIFT_R;
-    };
-} ModState;
+  };
+} ModState;  
 
 #define MOD_MASK_CTRL_L (MOD_BIT(KC_LCTL))
 #define MOD_MASK_CTRL_R (MOD_BIT(KC_RCTL))

@@ -1,17 +1,7 @@
 #include QMK_KEYBOARD_H
+#include "keymap.h"
 #include "src/core.h"
 #include "src/rgb.h"
-
-#define KC_MB1   KC_MS_BTN1
-#define KC_MB2   KC_MS_BTN2
-#define KC_MB3   KC_MS_BTN3 // MWHEEL_CLICK
-
-// CUSTOM KEY RANGE -> CK_00 - CK_56
-#define CK_SENT  CK_00
-
-#define MA_OR    CK_31
-#define MA_AND   CK_32
-#define MA_PTR   CK_33 
 
 uint16_t process_remaps(uint16_t kc, ModState ms) {
   if (kc == KC_ESC && ms.ALT) return KC_TAB;
@@ -42,8 +32,8 @@ uint16_t process_remaps(uint16_t kc, ModState ms) {
 
 uint16_t process_os(uint16_t kc, ModState ms, int os) {
   if(os == OS_REM) {
-    if (kc == KC_LWIN) return KC_F18;
-    if (kc == KC_LALT) return KC_F19;
+    if (kc == KC_LWIN) return CK_GUI;
+    if (kc == KC_LALT) return CK_ALT;
   }
 
   return CK_NO;

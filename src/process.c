@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include "keymap.h"
 #include "src/core.h"
 #include "src/rgb.h"
 
@@ -7,28 +8,40 @@ bool __ws_ctrl_down = false;
 bool __ws_gui_down = false;
 bool __ws_alt_down = false;
 
-void handle_window_switch(uint16_t kc, keyrecord_t *rec) {
-  bool pressed = rec->event.pressed;
-  if (kc == KC_LALT || kc == KC_LALT) __ws_alt_down = pressed;
-  if (kc == KC_LGUI || kc == KC_RGUI) __ws_gui_down = pressed;
-  if (kc == KC_LCTL || kc == KC_RCTL) __ws_ctrl_down = pressed;
+typedef union {
+  struct {
+    bool enabled;
+    bool ctl;
+    bool alt;
+    bool gui;
+    bool any;
+  };
+} TabbingState;
 
-  if (pressed) {
-    bool any_down = __ws_alt_down || __ws_gui_down || __ws_ctrl_down;
-    if (kc == KC_TAB && any_down) {
-      layer_move(LOWER);
-      __ws_enabled = true;
-      
-    }
-    
-    return;
-  } else {
-    bool all_up = !__ws_alt_down && !__ws_gui_down && !__ws_ctrl_down;
-    if (__ws_enabled && all_up) {
-      layer_move(BASE);
-      __ws_enabled = false;
-    }
-    return;
+TabbingState tabbing_state = {};
+
+void get_tabbing_mod(uint16_t kc, keyrecord_t *rec) {
+  bool pressed = rec->event.pressed;
+  if (kc == KC_LCTL || kc == KC_RCTL) tabbing_state.ctl = pressed;
+  if (kc == KC_LGUI || kc == KC_RGUI || (kc == CK_GUI && OS == OS_REM)) tabbing_state.gui = pressed;
+  if (kc == KC_LALT || kc == KC_LALT || (kc == CK_ALT && OS == OS_REM)) tabbing_state.alt = pressed;
+  
+  tabbing_state.any = tabbing_state.ctl || tabbing_state.gui || tabbing_state.alt;
+}
+
+void handle_tabbing(uint16_t kc, keyrecord_t *rec) {
+  bool pressed = rec->event.pressed;
+
+  if (!tabbing_state.any && tabbing_state.enabled && !pressed) {
+    layer_move(BASE);
+    tabbing_state.enabled = false;
+  }
+
+  if (kc != KC_TAB) return;
+
+  if (tabbing_state.any && !tabbing_state.enabled && pressed) {
+    layer_move(LOWER);
+    tabbing_state.enabled = true;
   }
 }
 
@@ -55,7 +68,8 @@ bool process_record_user(uint16_t kc, keyrecord_t *rec) {
   kc = get_current_keycode();
 
   if (handle_rgb(kc, rec)) return false;
-  handle_window_switch(kc, rec);
+  get_tabbing_mod(kc, rec);
+  handle_tabbing(kc, rec);
 
   return can_continue;
 }
