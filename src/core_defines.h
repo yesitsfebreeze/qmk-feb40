@@ -3,11 +3,12 @@ enum LAYERS {
   LOWER,
   RAISE,  
   COMBO,
+  GAME,
 };
 
 enum OS_TYPES {
   OS_WIN,
-  OS_REM,
+  OS_MAC,
   OS_LST
 };
 
@@ -17,3 +18,5 @@ enum OS_TYPES {
 
 #define CK_OS QK_USER_31
 #define CK_NO QK_UNICODE_MAX
+
+#define xxxxxxx KC_NO

@@ -94,16 +94,28 @@ void set_rgb_mode(void) {
 
 bool rgb_matrix_indicators_user(void) {
   if (!RGB_INDICATOR) return true;
-  if (RGB_MODE) {
-    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);  
+  uint8_t current_layer = get_highest_layer(layer_state);
+  if (current_layer == GAME) {
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_W - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_A - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_S - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_D - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);
   } else {
-    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+    if (RGB_MODE) {
+      rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);
+    } else {
+      rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+    }
   }
   return true;
 }
 
 void layer_color_change(uint8_t layer) {
   switch (layer) {
+    case GAME:
+      set_color(RGB_GAME);
+      break;
     case COMBO:
       set_color(RGB_COMBO);
       break;
@@ -114,8 +126,8 @@ void layer_color_change(uint8_t layer) {
       set_color(RGB_RAISE);
       break;
     default:
-      if (OS == OS_REM) {
-        set_color(RGB_REMOTE);
+      if (OS == OS_MAC) {
+        set_color(RGB_MAC);
         break;
       } else {
         set_color(RGB_BASE);
