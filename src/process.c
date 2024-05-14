@@ -130,6 +130,17 @@ void matrix_scan_user(void) {
   process_stats();
 }
 
+bool handle_hype(uint16_t kc, keyrecord_t *rec) {
+  if (kc != KC_HYPE) return false;
+  if (!rec->event.pressed) return false;
+  if (rec->tap.count) {
+    tap_code16(HYPR(KC_SPACE));
+  } else {
+    tap_code16(KC_LSFT);
+  }
+  return true;
+}
+
 bool process_record_user(uint16_t kc, keyrecord_t *rec) {
   if (is_core_kc(kc)) return true;
   bool can_continue = true;
@@ -138,7 +149,8 @@ bool process_record_user(uint16_t kc, keyrecord_t *rec) {
 
   if (handle_rgb(kc, rec)) return false;
   if (handle_stats(kc, rec)) return false;
-
+  if (handle_hype(kc, rec)) return false;
+ 
   handle_tabbing(kc, rec);
   handle_capslock(kc, rec);
 
