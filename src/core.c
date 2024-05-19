@@ -58,6 +58,13 @@ void _set_remap_mod_state(void) {
 
 bool handle_os_cycle(uint16_t kc, keyrecord_t *rec) {
   if (kc != CK_OS || !rec->event.pressed) return false;
+  unregister_code16(kc);
+  unregister_code16(KC_LCTL);
+  unregister_code16(KC_RCTL);
+  unregister_code16(KC_LGUI);
+  unregister_code16(KC_RGUI);
+  unregister_code16(KC_LALT);
+  unregister_code16(KC_RALT);
   OS++;
   OS = OS % OS_LST;
   return true;

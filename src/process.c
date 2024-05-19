@@ -1,63 +1,17 @@
 #include QMK_KEYBOARD_H
+#include "src/process.h"
 #include "keymap.h"
 #include "src/core.h"
 #include "src/rgb.h"
 
-typedef union {
-  struct {
-    bool enabled;
-    bool ctl;
-    bool alt;
-    bool gui;
-    bool any;
-  };
-} TabbingState;
-
-TabbingState tabbing_state = {};
-
-void handle_tabbing(uint16_t kc, keyrecord_t *rec) {
-  bool pressed = rec->event.pressed;
-
-  if (kc == KC_LCTL || kc == KC_RCTL) tabbing_state.ctl = pressed;
-  if (kc == KC_LGUI || kc == KC_RGUI) tabbing_state.gui = pressed;
-  if (kc == KC_LALT || kc == KC_LALT) tabbing_state.alt = pressed;    
-
-  tabbing_state.any = tabbing_state.ctl || tabbing_state.gui || tabbing_state.alt;
-
-  if (pressed) {
-    if (kc != KC_TAB) return;
-    if (tabbing_state.enabled) return;
-    if (!tabbing_state.any) return;
-    if (OS == OS_MAC) {
-      if (tabbing_state.gui) {
-        unregister_code16(KC_LGUI);
-        register_code16(KC_LCTL);
-      }
-      if (tabbing_state.alt) {
-        unregister_code16(KC_LALT);
-        register_code16(KC_LGUI);
-      }
-    }
-    layer_move(LOWER);
-    tabbing_state.enabled = true;
-  } else {
-    if (!tabbing_state.enabled) return;
-    if (tabbing_state.any) return;
-    if (OS == OS_MAC) {
-      unregister_code16(KC_LCTL);
-      unregister_code16(KC_LGUI);
-      unregister_code16(KC_LALT);
-    }
-    layer_move(BASE);
-    tabbing_state.enabled = false;
-    
-  }
-}
+#ifdef CONSOLE_ENABLE
+#include "print.h"
+#endif
 
 void keyboard_post_init_user(void) {
-  #ifdef CONSOLE_ENABLE
-    debug_enable=true;
-  #endif
+#ifdef CONSOLE_ENABLE
+  debug_enable = true;
+#endif
   init_rgb();
 }
 
@@ -68,6 +22,86 @@ bool is_core_kc(uint16_t kc) {
   if (kc == QK_BOOT) return true;
   
   return false;
+}
+
+TabState tab_state = {};
+
+void arrow_remap(uint16_t kc, keyrecord_t *rec) {
+  if (!tab_state.enabled) return;
+  
+  static const uint16_t remap_table[4][2] = {
+    {KC_W, KC_UP},
+    {KC_A, KC_LEFT},
+    {KC_S, KC_DOWN},
+    {KC_D, KC_RIGHT}
+  };
+
+  bool pressed = rec->event.pressed;
+  for (int i = 0; i < 4; i++) {
+    if (kc == remap_table[i][0]) {
+      if (pressed) {
+        unregister_code16(remap_table[i][0]);
+        register_code16(remap_table[i][1]);
+      } else {
+        unregister_code16(remap_table[i][1]);
+        register_code16(remap_table[i][0]);
+      }
+      break;
+    }
+  }
+}
+
+int last_os = -1;
+void handle_tabbing(uint16_t kc, keyrecord_t *rec) {
+  bool pressed = rec->event.pressed;
+  
+  if (kc == KC_LCTL) tab_state.ctl = pressed;
+  if (kc == KC_LGUI) tab_state.gui = pressed;
+  if (kc == KC_LALT) tab_state.alt = pressed;
+
+  if (last_os != OS) {
+    last_os = OS;
+    tab_state.enabled = false;
+    tab_state.ctl = false;
+    tab_state.gui = false;
+    tab_state.alt = false;
+    tab_state.any = false;
+  }
+
+  tab_state.any = tab_state.ctl || tab_state.gui || tab_state.alt;
+
+  if (OS == OS_MAC && !pressed && !tab_state.any) {
+    if (kc == KC_LCTL || kc == KC_LGUI || kc == KC_LALT) {
+     unregister_code16(KC_LCTL);
+     unregister_code16(KC_LGUI);
+     unregister_code16(KC_LALT);
+    }
+  }
+
+  if (pressed) {
+    if (!tab_state.any) return;
+    if (tab_state.enabled) {
+      arrow_remap(kc, rec);
+       return;
+    }
+    if (kc != KC_TAB) return;
+    tab_state.enabled = true;
+    if (OS == OS_MAC) {
+      if (tab_state.gui) {
+        unregister_code16(KC_LGUI);
+        register_code16(KC_LCTL);
+      }
+
+      if (tab_state.alt) {
+        unregister_code16(KC_LALT);
+        register_code16(KC_LGUI);
+      }
+    }
+  } else {
+    if (!tab_state.enabled) return;
+    if (tab_state.any) return;
+    tab_state.enabled = false;
+  }
 }
 
 void handle_capslock(uint16_t kc, keyrecord_t *rec) {
@@ -126,19 +160,37 @@ void process_stats(void) {
   }
 }
 
-void matrix_scan_user(void) {
-  process_stats();
+bool hyper = false;
+int hyper_taps = 0;
+uint16_t hype_timer;
+bool handle_hype(uint16_t kc, keyrecord_t *rec) {
+  if (kc != CK_HYPE) return false;
+  hype_timer = timer_read();
+  hyper = rec->event.pressed;
+  if (hyper) hyper_taps++;
+  return true;
 }
 
-bool handle_hype(uint16_t kc, keyrecord_t *rec) {
-  if (kc != KC_HYPE) return false;
-  if (!rec->event.pressed) return false;
-  if (rec->tap.count) {
-    tap_code16(HYPR(KC_SPACE));
-  } else {
-    tap_code16(KC_LSFT);
+void process_hype(void) {
+  uint16_t elapsed = timer_elapsed(hype_timer);
+  if (!hyper && elapsed > TAPPING_TERM_SLOW) {
+    if (hyper_taps > 0) hyper_taps--;
   }
-  return true;
+  if (hyper) {
+    if (hyper_taps == 2) {
+      tap_code16(HYPR(KC_SPACE));
+      hyper_taps = 0;
+    } else {
+      register_code16(KC_LSFT);  
+    }
+  } else {
+    unregister_code16(KC_LSFT);
+  }
+}
+
+void matrix_scan_user(void) {
+  process_stats();
+  process_hype();
 }
 
 bool process_record_user(uint16_t kc, keyrecord_t *rec) {
@@ -150,7 +202,7 @@ bool process_record_user(uint16_t kc, keyrecord_t *rec) {
   if (handle_rgb(kc, rec)) return false;
   if (handle_stats(kc, rec)) return false;
   if (handle_hype(kc, rec)) return false;
- 
+
   handle_tabbing(kc, rec);
   handle_capslock(kc, rec);
 
@@ -159,5 +211,8 @@ bool process_record_user(uint16_t kc, keyrecord_t *rec) {
 
 // faster tapping term for space layer keys
 uint16_t get_tapping_term(uint16_t kc, keyrecord_t *rec) {
-  return TAPPING_TERM;
+  if (kc == LT_L) return TAPPING_TERM;
+  if (kc == LT_R) return TAPPING_TERM;
+  if (kc == LT_C) return TAPPING_TERM;
+  return TAPPING_TERM_SLOW;
 }
