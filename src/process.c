@@ -185,7 +185,9 @@ void keyboard_post_init_user(void) {
   #ifdef CONSOLE_ENABLE
     debug_enable = true;
   #endif
-  init_rgb();
+  #ifdef RGB_MATRIX_ENABLE
+    init_rgb();
+  #endif
 }
 
 void matrix_scan_user(void) {
@@ -205,7 +207,9 @@ bool process_record_user(uint16_t kc, keyrecord_t *rec) {
   if (handle_snaptap(kc)) return false;
   if (handle_stats(kc)) return false;
   if (handle_hype(kc)) return false;
-  if (handle_rgb(kc, rec)) return false;
+  #ifdef RGB_MATRIX_ENABLE
+    if (handle_rgb(kc, rec)) return false;
+  #endif
 
   handle_tabbing(kc);
 

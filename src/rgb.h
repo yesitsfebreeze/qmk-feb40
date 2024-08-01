@@ -2,6 +2,9 @@
 #include "src/core.h"
 #include QMK_KEYBOARD_H
 
+#define CK_RGB  CK_INTERN_1
+#define CK_RGBI CK_INTERN_2
+
 #ifdef RGB_MATRIX_ENABLE
 
 #define RGB_BASE   136, 0,   255
@@ -24,10 +27,8 @@ extern uint8_t INDICATOR_R;
 extern uint8_t INDICATOR_G;
 extern uint8_t INDICATOR_B;
 
-#endif
-
-#define CK_RGB  CK_INTERN_1
-#define CK_RGBI CK_INTERN_2
-
 void init_rgb(void);
 bool handle_rgb(uint16_t kc, keyrecord_t *rec);
+
+#endif
+

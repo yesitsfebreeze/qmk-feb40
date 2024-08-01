@@ -1,65 +1,68 @@
 #include "src/core.h"
 
 int8_t OS = OS_WIN;
-
 bool has_remap = false;
 uint16_t current_kc = CK_NO;
-ModState remap_mod_state = {}; 
+ModState mod_state = {}; 
 CustomKey custom_keys[MATRIX_ROWS][MATRIX_COLS] = {};
 
 ModState get_current_mod_state() {
   uint8_t mods = get_mods();
   return (ModState) {
     .NONE     = (mods == 0),
-    .CTRL     = (mods & MOD_MASK_CTRL),
-    .CTRL_L   = (mods & MOD_MASK_CTRL_L),
-    .CTRL_R   = (mods & MOD_MASK_CTRL_R),
-    .ALT      = (mods & MOD_MASK_ALT),
-    .ALT_L    = (mods & MOD_MASK_ALT_L),
-    .ALT_R    = (mods & MOD_MASK_ALT_R),
-    .GUI      = (mods & MOD_MASK_GUI),
-    .GUI_L    = (mods & MOD_MASK_GUI_L),
-    .GUI_R    = (mods & MOD_MASK_GUI_R),
-    .SHIFT    = (mods & MOD_MASK_SHIFT),
-    .SHIFT_L  = (mods & MOD_MASK_SHIFT_L),
-    .SHIFT_R  = (mods & MOD_MASK_SHIFT_R),
+    .CTRL     = (mods & MOD_MASK_CTRL)  ? true : false,
+    .CTRL_L   = (mods & MOD_MASK_CTRL_L) ? true : false,
+    .CTRL_R   = (mods & MOD_MASK_CTRL_R) ? true : false,
+    .ALT      = (mods & MOD_MASK_ALT)   ? true : false,
+    .ALT_L    = (mods & MOD_MASK_ALT_L) ? true : false,
+    .ALT_R    = (mods & MOD_MASK_ALT_R) ? true : false,
+    .GUI      = (mods & MOD_MASK_GUI)   ? true : false,
+    .GUI_L    = (mods & MOD_MASK_GUI_L) ? true : false,
+    .GUI_R    = (mods & MOD_MASK_GUI_R) ? true : false,
+    .SHIFT    = (mods & MOD_MASK_SHIFT) ? true : false,
+    .SHIFT_L  = (mods & MOD_MASK_SHIFT_L) ? true : false,
+    .SHIFT_R  = (mods & MOD_MASK_SHIFT_R) ? true : false,
   };
 }
 
 void _handle_custom_mod_mask(uint16_t kc, bool state) {
-  if (kc == KC_LCTL) remap_mod_state.CTRL   = remap_mod_state.CTRL_L  = state;
-  if (kc == KC_RCTL) remap_mod_state.CTRL   = remap_mod_state.CTRL_R  = state;
-  if (kc == KC_LGUI) remap_mod_state.GUI    = remap_mod_state.GUI_L   = state;
-  if (kc == KC_RGUI) remap_mod_state.GUI    = remap_mod_state.GUI_R   = state;
-  if (kc == KC_LALT) remap_mod_state.ALT    = remap_mod_state.ALT_L   = state;
-  if (kc == KC_RALT) remap_mod_state.ALT    = remap_mod_state.ALT_R   = state;
-  if (kc == KC_LSFT) remap_mod_state.SHIFT  = remap_mod_state.SHIFT_L = state;
-  if (kc == KC_RSFT) remap_mod_state.SHIFT  = remap_mod_state.SHIFT_R = state;
+  switch (kc) {
+    case KC_LCTL: mod_state.CTRL = mod_state.CTRL_L = state; break;
+    case KC_RCTL: mod_state.CTRL = mod_state.CTRL_R = state; break;
+    case KC_LGUI: mod_state.GUI  = mod_state.GUI_L  = state; break;
+    case KC_RGUI: mod_state.GUI  = mod_state.GUI_R  = state; break;
+    case KC_LALT: mod_state.ALT  = mod_state.ALT_L  = state; break;
+    case KC_RALT: mod_state.ALT  = mod_state.ALT_R  = state; break;
+    case KC_LSFT: mod_state.SHIFT = mod_state.SHIFT_L = state; break;
+    case KC_RSFT: mod_state.SHIFT = mod_state.SHIFT_R = state; break;
+  }
 }
 
 void _set_mod_state(bool state, uint8_t mask) {
-  if (state) return add_mods(mask);
-  del_mods(mask);
+  if (state) {
+    add_mods(mask);
+  } else {
+    del_mods(mask);
+  }
 }
 
-void _set_remap_mod_state(void) {
-  _set_mod_state(remap_mod_state.CTRL_L, MOD_MASK_CTRL_L);
-  _set_mod_state(remap_mod_state.CTRL_R, MOD_MASK_CTRL_R);
+void _reset_mod_state(void) {
+  _set_mod_state(mod_state.CTRL_L, MOD_MASK_CTRL_L);
+  _set_mod_state(mod_state.CTRL_R, MOD_MASK_CTRL_R);
   
-  _set_mod_state(remap_mod_state.GUI_L, MOD_MASK_GUI_L);
-  _set_mod_state(remap_mod_state.GUI_R, MOD_MASK_GUI_R);
+  _set_mod_state(mod_state.GUI_L, MOD_MASK_GUI_L);
+  _set_mod_state(mod_state.GUI_R, MOD_MASK_GUI_R);
 
-  _set_mod_state(remap_mod_state.ALT_L, MOD_MASK_ALT_L);
-  _set_mod_state(remap_mod_state.ALT_R, MOD_MASK_ALT_R);
+  _set_mod_state(mod_state.ALT_L, MOD_MASK_ALT_L);
+  _set_mod_state(mod_state.ALT_R, MOD_MASK_ALT_R);
 
-  _set_mod_state(remap_mod_state.SHIFT_L, MOD_MASK_SHIFT_L);
-  _set_mod_state(remap_mod_state.SHIFT_R, MOD_MASK_SHIFT_R);
+  _set_mod_state(mod_state.SHIFT_L, MOD_MASK_SHIFT_L);
+  _set_mod_state(mod_state.SHIFT_R, MOD_MASK_SHIFT_R);
 }
 
 bool handle_os_cycle(uint16_t kc, keyrecord_t *rec) {
   if (kc != CK_OS || !rec->event.pressed) return false;
-  OS++;
-  OS = OS % OS_LST;
+  OS = (OS + 1) % OS_LST;
   return true;
 }
 
@@ -108,19 +111,15 @@ bool handle_core(uint16_t kc, keyrecord_t *rec) {
   bool handled = false;
   has_remap = false;
   current_kc = kc;
-  remap_mod_state = get_current_mod_state();
+  mod_state = get_current_mod_state();
   del_mods(MOD_MASK_CSAG);
 
-  if (rec->event.pressed) {
-    _handle_custom_mod_mask(kc, true);
-  } else {
-    _handle_custom_mod_mask(kc, false);
-  }
+  _handle_custom_mod_mask(kc, rec->event.pressed);
 
-  uint16_t remap = process_remaps(current_kc, remap_mod_state);
+  uint16_t remap = process_remaps(current_kc, mod_state);
   if (remap != CK_NO) current_kc = remap;
 
-  uint16_t os = process_os(current_kc, remap_mod_state, OS);
+  uint16_t os = process_os(current_kc, mod_state, OS);
   if (os != CK_NO) current_kc = os;
 
   has_remap = (remap != CK_NO || os != CK_NO);
@@ -128,11 +127,11 @@ bool handle_core(uint16_t kc, keyrecord_t *rec) {
   if (has_remap && current_kc == KC_NO)   handled = true;
   if (!handled && handle_macro(kc, rec))  handled = true;
   if (!handled && handle_remap(kc, rec))  handled = true;
-    
-  _set_remap_mod_state();
+  
+  _reset_mod_state();
   return handled;
 }
 
 uint16_t get_current_keycode(void) {
-  return current_kc;
+    return current_kc;
 }

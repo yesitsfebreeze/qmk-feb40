@@ -2,26 +2,6 @@
 #include QMK_KEYBOARD_H
 #include "core_defines.h"
 
-extern int8_t OS;
-
-typedef union {
-  struct {
-    bool NONE;
-    bool CTRL;
-    bool CTRL_L;
-    bool CTRL_R;
-    bool ALT;
-    bool ALT_L;
-    bool ALT_R;
-    bool GUI;
-    bool GUI_L;
-    bool GUI_R;
-    bool SHIFT;
-    bool SHIFT_L;
-    bool SHIFT_R;
-  };
-} ModState;  
-
 #define MOD_MASK_CTRL_L (MOD_BIT(KC_LCTL))
 #define MOD_MASK_CTRL_R (MOD_BIT(KC_RCTL))
 #define MOD_MASK_ALT_L (MOD_BIT(KC_LALT))
@@ -30,6 +10,26 @@ typedef union {
 #define MOD_MASK_GUI_R (MOD_BIT(KC_RGUI))
 #define MOD_MASK_SHIFT_L (MOD_BIT(KC_LSFT))
 #define MOD_MASK_SHIFT_R (MOD_BIT(KC_RSFT))
+
+extern int8_t OS;
+
+typedef union {
+  struct {
+    bool NONE     : 1;
+    bool CTRL     : 1;
+    bool CTRL_L   : 1;
+    bool CTRL_R   : 1;
+    bool ALT      : 1;
+    bool ALT_L    : 1;
+    bool ALT_R    : 1;
+    bool GUI      : 1;
+    bool GUI_L    : 1;
+    bool GUI_R    : 1;
+    bool SHIFT    : 1;
+    bool SHIFT_L  : 1;
+    bool SHIFT_R  : 1;
+  };
+} ModState;
 
 typedef union {
   struct {

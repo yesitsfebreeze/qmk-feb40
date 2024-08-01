@@ -146,18 +146,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
-#endif
-
 void init_rgb() {
-  #ifdef RGB_MATRIX_ENABLE
     layer_color_change(BASE);
     set_rgb_mode();
     layer_move(BASE);
-  #endif
 }
 
 bool handle_rgb(uint16_t kc, keyrecord_t *rec) {
-  #ifdef RGB_MATRIX_ENABLE
     if (!rec->event.pressed) return false;
     if (kc != CK_RGB && kc != CK_RGBI) return false;
 
@@ -167,6 +162,9 @@ bool handle_rgb(uint16_t kc, keyrecord_t *rec) {
     set_rgb_mode();
     
     return true;
-  #endif
   return false;
 }
+
+#endif
+
+
