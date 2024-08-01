@@ -23,8 +23,11 @@ flash: ## [console=true|false] [km=my_keymap]
 	@qmk flash -kb $(kb) -km $(km)
 	@make copy -B km=$(km)
 ifeq ($(console),true)
-	@qmk console
+	@make console
 endif
+
+console: ## opens console
+	@qmk console
 
 # private
 

@@ -13,4 +13,3 @@ SRC += src/core.c
 SRC += src/rgb.c
 SRC += src/process.c
 
-

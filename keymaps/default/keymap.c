@@ -2,7 +2,6 @@
 #include "keymap.h"
 #include "src/core.h"
 #include "src/rgb.h"
-#include "src/process.h"
 
 uint16_t process_remaps(uint16_t kc, ModState ms) {
   if (kc == KC_ESC && ms.ALT) return KC_TAB;
@@ -27,12 +26,13 @@ uint16_t process_remaps(uint16_t kc, ModState ms) {
   if (kc == KC_END && ms.CTRL) return KC_PGDN;
   if (kc == KC_9 && ms.SHIFT) return KC_TILDE;
   if (kc == KC_MINS && ms.SHIFT) return KC_PPLS;
-
+        
   return CK_NO;  
 }
 
+
 uint16_t process_os(uint16_t kc, ModState ms, int os) {
-  if(os == OS_MAC) {
+if(os == OS_MAC) {
     switch(kc) {
       case KC_W:
         if (ms.CTRL) return LGUI(KC_W);
@@ -120,3 +120,5 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LCTL,  KC_LALT,  KC_3,               KC_SPC,             CK_STATS,                     KC_LEFT,  KC_DOWN,  KC_RIGHT
   ),
 };
+
+

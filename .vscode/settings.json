@@ -19,5 +19,6 @@
     "rgb.h": "c",
     "*.inc": "c",
     "keymap.h": "c"
-  }
+  },
+  "CodeGPT.apiKey": "CodeGPT Plus Beta"
 }

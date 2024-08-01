@@ -1,191 +1,191 @@
 #include QMK_KEYBOARD_H
-#include "src/process.h"
 #include "keymap.h"
 #include "src/core.h"
 #include "src/rgb.h"
-
 #ifdef CONSOLE_ENABLE
 #include "print.h"
 #endif
 
-void keyboard_post_init_user(void) {
-#ifdef CONSOLE_ENABLE
-  debug_enable = true;
-#endif
-  init_rgb();
+typedef struct {
+  bool enabled : 1;
+  bool ctl : 1;
+  bool alt : 1;
+  bool gui : 1;
+  bool any : 1;
+} TabbingState;
+
+typedef struct {
+  uint8_t state;
+  uint16_t time;
+  uint16_t timer;
+  uint16_t last_timer;
+  bool enabled : 1;
+  bool running : 1;
+  bool exec : 1;
+  bool caps : 1;
+} StatsState;
+
+typedef struct {
+  bool active : 1;
+  int taps;
+  uint16_t timer;
+} HypeState;
+
+typedef union {
+  struct {
+    uint8_t layer;
+    bool pressed : 1;
+    TabbingState tabbing;
+    StatsState stats;
+    uint16_t snap_tap[2];
+    HypeState hype;
+  };
+} State;
+
+State state = {
+  .layer = BASE,
+  .pressed = false,
+  .tabbing = {false, false, false, false, false},
+  .stats = {0, 250, 0, 0, false, false, false, false},
+  .snap_tap = {KC_NO, KC_NO},
+  .hype = {false, 0, 0}
+};
+
+void handle_tabbing(uint16_t kc) {
+  if (state.layer == GAME) return;
+
+  if (kc == KC_LCTL || kc == KC_RCTL) state.tabbing.ctl = state.pressed;
+  if (kc == KC_LGUI || kc == KC_RGUI || (kc == KC_LCTL && OS == OS_MAC)) state.tabbing.gui = state.pressed;
+  if (kc == KC_LALT || kc == KC_RALT || (kc == KC_LGUI && OS == OS_MAC)) state.tabbing.alt = state.pressed;
+
+  state.tabbing.any = state.tabbing.ctl || state.tabbing.gui || state.tabbing.alt;
+
+  if (state.pressed) {
+    if (kc != KC_TAB) return;
+    if (state.tabbing.enabled) return;
+    if (!state.tabbing.any) return;
+    layer_move(LOWER);
+    state.tabbing.enabled = true;
+  } else {
+    if (!state.tabbing.enabled) return;
+    if (state.tabbing.any) return;
+    layer_move(BASE);
+    state.tabbing.enabled = false;
+  }
 }
 
 bool is_core_kc(uint16_t kc) {
-  if (kc == LT_L) return true;
-  if (kc == LT_R) return true;
-  if (kc == LT_C) return true;
-  if (kc == QK_BOOT) return true;
-  
+  switch (kc) {
+    case LT_L:
+    case LT_R:
+    case LT_C:
+    case QK_BOOT:
+      return true;
+  }
   return false;
 }
 
-TabState tab_state = {};
-
-void arrow_remap(uint16_t kc, keyrecord_t *rec) {
-  if (!tab_state.enabled) return;
-  
-  static const uint16_t remap_table[4][2] = {
-    {KC_W, KC_UP},
-    {KC_A, KC_LEFT},
-    {KC_S, KC_DOWN},
-    {KC_D, KC_RIGHT}
-  };
-
-  bool pressed = rec->event.pressed;
-  for (int i = 0; i < 4; i++) {
-    if (kc == remap_table[i][0]) {
-      if (pressed) {
-        unregister_code16(remap_table[i][0]);
-        register_code16(remap_table[i][1]);
-      } else {
-        unregister_code16(remap_table[i][1]);
-        register_code16(remap_table[i][0]);
-      }
-      break;
-    }
-  }
-}
-
-int last_os = -1;
-void handle_tabbing(uint16_t kc, keyrecord_t *rec) {
-  bool pressed = rec->event.pressed;
-  
-  if (kc == KC_LCTL) tab_state.ctl = pressed;
-  if (kc == KC_LGUI) tab_state.gui = pressed;
-  if (kc == KC_LALT) tab_state.alt = pressed;
-
-  if (last_os != OS) {
-    last_os = OS;
-    tab_state.enabled = false;
-    tab_state.ctl = false;
-    tab_state.gui = false;
-    tab_state.alt = false;
-    tab_state.any = false;
-  }
-
-  tab_state.any = tab_state.ctl || tab_state.gui || tab_state.alt;
-
-  if (OS == OS_MAC && !pressed && !tab_state.any) {
-    if (kc == KC_LCTL || kc == KC_LGUI || kc == KC_LALT) {
-     unregister_code16(KC_LCTL);
-     unregister_code16(KC_LGUI);
-     unregister_code16(KC_LALT);
-    }
-  }
-
-  if (pressed) {
-    if (!tab_state.any) return;
-    if (tab_state.enabled) {
-      arrow_remap(kc, rec);
-       return;
-    }
-    if (kc != KC_TAB) return;
-    tab_state.enabled = true;
-    if (OS == OS_MAC) {
-      if (tab_state.gui) {
-        unregister_code16(KC_LGUI);
-        register_code16(KC_LCTL);
-      }
-
-      if (tab_state.alt) {
-        unregister_code16(KC_LALT);
-        register_code16(KC_LGUI);
-      }
-    }
-  } else {
-    if (!tab_state.enabled) return;
-    if (tab_state.any) return;
-    tab_state.enabled = false;
-  }
-}
-
-void handle_capslock(uint16_t kc, keyrecord_t *rec) {
-  if (kc != KC_CAPS) return;
-  bool pressed = rec->event.pressed;
-  if (pressed) return;
-  tap_code16(KC_CAPS);
-}
-
-uint16_t stats_time = 250;
-uint16_t stats_timer;
-uint16_t last_stats_timer;
-uint16_t stats_state    = 0;
-bool     stats_enabled  = false;
-bool     stats_running  = false;
-bool     stats_can_exec = false;
-bool     stats_is_caps  = false;
-
-bool handle_stats(uint16_t kc, keyrecord_t *rec) {
+bool handle_stats(uint16_t kc) {
   if (kc != CK_STATS) return false;
-  stats_enabled = rec->event.pressed;
-  if (!stats_enabled) return false;
-  stats_can_exec = true;
+  state.stats.enabled = state.pressed;
+  if (!state.stats.enabled) return false;
+  state.stats.exec = true;
 
-  last_stats_timer = timer_elapsed(stats_timer);
-  stats_timer      = timer_read();
-  stats_state      = 0;
+  state.stats.last_timer = timer_elapsed(state.stats.timer);
+  state.stats.timer = timer_read();
+  state.stats.state = 0;
 
-  if (last_stats_timer < stats_time) stats_state = 1;
+  if (state.stats.last_timer < state.stats.time) state.stats.state = 1;
   return true;
 }
 
 void process_stats(void) {
-  if (!stats_can_exec) return;
-  if (!stats_enabled) {
-    if (!stats_running) return;
-    stats_can_exec = false;
+  if (!state.stats.exec) return;
+  if (!state.stats.enabled) {
+    if (!state.stats.running) return;
+    state.stats.exec = false;
     unregister_code16(KC_TAB);
     unregister_code16(KC_CAPS);
-    if (stats_is_caps) {
+    if (state.stats.caps) {
       tap_code16(KC_CAPS);
-      stats_is_caps = false;
+      state.stats.caps = false;
     }
-    stats_running = false;
+    state.stats.running = false;
   } else {
-    if (stats_running) return;
-    if (stats_state == 0) {
+    if (state.stats.running) return;
+    if (state.stats.state == 0) {
       register_code16(KC_TAB);
-      stats_is_caps = false;
+      state.stats.caps = false;
     }
-    if (stats_state == 1) {
+    if (state.stats.state == 1) {
       register_code16(KC_CAPS);
-      stats_is_caps = true;
+      state.stats.caps = true;
     }
-    stats_running = true;
+    state.stats.running = true;
   }
 }
 
-bool hyper = false;
-int hyper_taps = 0;
-uint16_t hype_timer;
-bool handle_hype(uint16_t kc, keyrecord_t *rec) {
+bool handle_snaptap(uint16_t kc) {
+  if (state.layer != GAME) return false;
+  if (kc != KC_A && kc != KC_D) return false;
+
+  uint16_t other_key = (kc == KC_A) ? KC_D : KC_A;
+
+  if (state.pressed) {
+    if (state.snap_tap[0] != kc) {
+      if (state.snap_tap[0] != KC_NO) unregister_code16(state.snap_tap[0]);
+      state.snap_tap[1] = state.snap_tap[0];
+      state.snap_tap[0] = kc;
+      register_code16(kc);
+    }
+  } else {
+    if (kc == state.snap_tap[0]) {
+      unregister_code16(kc);
+      if (state.snap_tap[1] == other_key) register_code16(other_key);
+      state.snap_tap[0] = state.snap_tap[1];
+      state.snap_tap[1] = KC_NO;
+    } else if (kc == state.snap_tap[1]) {
+      state.snap_tap[1] = KC_NO;
+    }
+  }
+  return true;
+}
+
+bool handle_hype(uint16_t kc) {
   if (kc != CK_HYPE) return false;
-  hype_timer = timer_read();
-  hyper = rec->event.pressed;
-  if (hyper) hyper_taps++;
+  state.hype.timer = timer_read();
+  state.hype.active = state.pressed;
+  if (state.hype.active) {
+    state.hype.taps++;
+  } else {
+    unregister_code16(KC_LSFT);
+  }
   return true;
 }
 
 void process_hype(void) {
-  uint16_t elapsed = timer_elapsed(hype_timer);
-  if (!hyper && elapsed > TAPPING_TERM_SLOW) {
-    if (hyper_taps > 0) hyper_taps--;
+  uint16_t elapsed = timer_elapsed(state.hype.timer);
+  if (!state.hype.active && elapsed > TAPPING_TERM_SLOW) {
+    if (state.hype.taps > 0) state.hype.taps--;
   }
-  if (hyper) {
-    if (hyper_taps == 2) {
-      tap_code16(HYPR(KC_SPACE));
-      hyper_taps = 0;
+  if (state.hype.active) {
+    if (state.hype.taps == 2) {
+      tap_code16(HYPR(KC_M));
+      state.hype.taps = 0;
     } else {
-      register_code16(KC_LSFT);  
+      register_code16(KC_LSFT);
     }
-  } else {
-    unregister_code16(KC_LSFT);
   }
+}
+
+
+// QMK hooks
+
+void keyboard_post_init_user(void) {
+  #ifdef CONSOLE_ENABLE
+    debug_enable = true;
+  #endif
+  init_rgb();
 }
 
 void matrix_scan_user(void) {
@@ -194,25 +194,32 @@ void matrix_scan_user(void) {
 }
 
 bool process_record_user(uint16_t kc, keyrecord_t *rec) {
+  state.layer = get_highest_layer(layer_state);
+  state.pressed = rec->event.pressed;
+
   if (is_core_kc(kc)) return true;
   bool can_continue = true;
   if (handle_core(kc, rec)) can_continue = false;
   kc = get_current_keycode();
 
+  if (handle_snaptap(kc)) return false;
+  if (handle_stats(kc)) return false;
+  if (handle_hype(kc)) return false;
   if (handle_rgb(kc, rec)) return false;
-  if (handle_stats(kc, rec)) return false;
-  if (handle_hype(kc, rec)) return false;
 
-  handle_tabbing(kc, rec);
-  handle_capslock(kc, rec);
+  handle_tabbing(kc);
 
   return can_continue;
 }
 
-// faster tapping term for space layer keys
+// Faster tapping term for space layer keys
 uint16_t get_tapping_term(uint16_t kc, keyrecord_t *rec) {
-  if (kc == LT_L) return TAPPING_TERM;
-  if (kc == LT_R) return TAPPING_TERM;
-  if (kc == LT_C) return TAPPING_TERM;
-  return TAPPING_TERM_SLOW;
+  switch (kc) {
+    case LT_L:
+    case LT_R:
+    case LT_C:
+      return TAPPING_TERM;
+    default:
+      return TAPPING_TERM_SLOW;
+  }
 }

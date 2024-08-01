@@ -96,28 +96,19 @@ bool rgb_matrix_indicators_user(void) {
   if (!RGB_INDICATOR) return true;
   uint8_t current_layer = get_highest_layer(layer_state);
   if (current_layer == GAME) {
-    rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_KEY, 0, 0, 0);
-    rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_W, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-    rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_A, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-    rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_S, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-    rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_D, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);  
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_W - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);  
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_A - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);  
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_S - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);  
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_D - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);  
   } else {
-    if (OS == OS_MAC) {
-      if (RGB_MODE) {
-        rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_KEY - 1, 0, 0, 0);
-        rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_KEY + 1, 0, 0, 0);
-      } else {
-        rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_KEY - 1, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-        rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_KEY + 1, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-      }
+    if (RGB_MODE) {
+      rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);  
     } else {
-      if (RGB_MODE) {
-        rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_KEY, 0, 0, 0);
-      } else {
-        rgb_matrix_set_color(42 - RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-      }
+      rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
     }
   }
+  
   return true;
 }
 
@@ -136,7 +127,12 @@ void layer_color_change(uint8_t layer) {
       set_color(RGB_RAISE);
       break;
     default:
-      set_color(RGB_BASE);
+      if (OS == OS_MAC) {
+        set_color(RGB_REMOTE);
+        break;
+      } else {
+        set_color(RGB_BASE);
+      }
       
       break;
   }
@@ -147,7 +143,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   if (layer == last_layer) return state;
   layer_color_change(layer);
   last_layer = layer;
-  
   return state;
 }
 
