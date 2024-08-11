@@ -13,6 +13,7 @@
 #define CK_CTLV  CK_05
 #define CK_HYPE  CK_06
 
-#define MA_OR    CK_31
-#define MA_AND   CK_32
-#define MA_PTR   CK_33
+#define MA_OR     CK_31
+#define MA_AND    CK_32
+#define MA_PTR    CK_33
+#define MA_COLCOL CK_34

@@ -2,6 +2,7 @@
 #include "keymap.h"
 #include "src/core.h"
 #include "src/rgb.h"
+#include "src/process.h"
 
 uint16_t process_remaps(uint16_t kc, ModState ms) {
   if (kc == KC_ESC && ms.ALT) return KC_TAB;
@@ -12,7 +13,7 @@ uint16_t process_remaps(uint16_t kc, ModState ms) {
   if (kc == KC_QUOT && ms.SHIFT) return KC_QUOT;
   if (kc == KC_QUOT && ms.NONE) return KC_DQUO;
   if (kc == KC_UNDS && ms.SHIFT) return KC_UNDS;
-  if (kc == KC_EQL && ms.SHIFT) return KC_EQL;
+  if (kc == KC_EQL && ms.SHIFT) return MA_COLCOL;
   if (kc == KC_LBRC && ms.SHIFT) return KC_LABK;
   if (kc == KC_RBRC && ms.SHIFT) return KC_RABK;
   if (kc == KC_LPRN && ms.SHIFT) return KC_LCBR;
@@ -26,13 +27,12 @@ uint16_t process_remaps(uint16_t kc, ModState ms) {
   if (kc == KC_END && ms.CTRL) return KC_PGDN;
   if (kc == KC_9 && ms.SHIFT) return KC_TILDE;
   if (kc == KC_MINS && ms.SHIFT) return KC_PPLS;
-        
+
   return CK_NO;  
 }
 
-
 uint16_t process_os(uint16_t kc, ModState ms, int os) {
-if(os == OS_MAC) {
+  if(os == OS_MAC) {
     switch(kc) {
       case KC_W:
         if (ms.CTRL) return LGUI(KC_W);
@@ -84,9 +84,11 @@ char* process_macros(uint16_t kc) {
   if (kc == MA_OR) return "||";
   if (kc == MA_AND) return "&&";
   if (kc == MA_PTR) return "->";
+  if (kc == MA_COLCOL) return "::";
 
   return "";
 }
+
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [BASE]  = LAYOUT(
