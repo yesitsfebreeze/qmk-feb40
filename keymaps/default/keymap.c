@@ -32,29 +32,29 @@ uint16_t process_remaps(uint16_t kc, ModState ms) {
 }
 
 uint16_t process_os(uint16_t kc, ModState ms, int os) {
-  dprintf("kc: %d\n", kc);
   if(os == OS_MAC) {
     switch(kc) {
-      // case KC_RIGHT:
-      //   if (state.tabbing.enabled) return KC_RIGHT;
-      //   if (ms.GUI && ms.SHIFT) return LSA(KC_RIGHT);
-      //   if (ms.GUI) return LALT(KC_RIGHT);
-      //   break;
-      // case KC_LEFT:
-      //   if (state.tabbing.enabled) return KC_LEFT;
-      //   if (ms.GUI && ms.SHIFT) return LSA(KC_LEFT);
-      //   if (ms.GUI) return LALT(KC_LEFT);
-      //   break;
+      case KC_RIGHT:
+        if (state.tabbing.enabled) break;
+        if (ms.GUI && ms.SHIFT) return LSA(KC_RIGHT);
+        if (ms.GUI) return LALT(KC_RIGHT);
+        break;
+      case KC_LEFT:
+        if (state.tabbing.enabled) break;
+        if (ms.GUI && ms.SHIFT) return LSA(KC_LEFT);
+        if (ms.GUI) return LALT(KC_LEFT);
+        break;
       case KC_LCTL:
         return KC_LGUI;
       case KC_LGUI:
         return KC_LCTL;
       case KC_HOME:
-          if (ms.GUI) return KC_PGUP;
-          break;
+        if (state.tabbing.enabled) return LGUI(KC_Q);
+        if (ms.GUI) return KC_PGUP;
+        break;
       case KC_END:
-          if (ms.GUI) return KC_PGDN;
-          break;
+        if (ms.GUI) return KC_PGDN;
+        break;
       case CK_CTLZ:
         return LGUI(KC_Z);
       case CK_CTLX:

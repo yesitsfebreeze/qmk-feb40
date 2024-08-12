@@ -8,7 +8,7 @@ CustomKey custom_keys[MATRIX_ROWS][MATRIX_COLS] = {};
 
 ModState get_current_mod_state() {
   uint8_t mods = get_mods();
-  return (ModState) {
+  mod_state = (ModState){
     .NONE     = (mods == 0),
     .CTRL     = (mods & MOD_MASK_CTRL)  ? true : false,
     .CTRL_L   = (mods & MOD_MASK_CTRL_L) ? true : false,
@@ -23,6 +23,8 @@ ModState get_current_mod_state() {
     .SHIFT_L  = (mods & MOD_MASK_SHIFT_L) ? true : false,
     .SHIFT_R  = (mods & MOD_MASK_SHIFT_R) ? true : false,
   };
+
+  return mod_state;
 }
 
 void _handle_custom_mod_mask(uint16_t kc, bool state) {

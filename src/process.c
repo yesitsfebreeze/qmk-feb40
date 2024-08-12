@@ -41,7 +41,10 @@ void handle_tabbing(uint16_t kc) {
         del_mods(MOD_MASK_GUI_L);
         register_code16(KC_LCTL);
       }
+      
     }
+    
+    
     layer_move(LOWER);
     state.tabbing.enabled = true;
   } else {
@@ -202,7 +205,6 @@ bool process_record_user(uint16_t kc, keyrecord_t *rec) {
   #endif
 
   handle_tabbing(kc);
-
   return can_continue;
 }
 
