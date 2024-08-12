@@ -105,7 +105,12 @@ bool rgb_matrix_indicators_user(void) {
     if (RGB_MODE) {
       rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);  
     } else {
-      rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+      if (OS == OS_MAC) {
+        rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY - 1, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+        rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY + 1, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+      } else {
+        rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+      }
     }
   }
   
@@ -127,13 +132,7 @@ void layer_color_change(uint8_t layer) {
       set_color(RGB_RAISE);
       break;
     default:
-      if (OS == OS_MAC) {
-        set_color(RGB_REMOTE);
-        break;
-      } else {
-        set_color(RGB_BASE);
-      }
-      
+       set_color(RGB_BASE);
       break;
   }
 }

@@ -2,45 +2,11 @@
 #include "keymap.h"
 #include "src/core.h"
 #include "src/rgb.h"
+#include "src/process.h"
 #ifdef CONSOLE_ENABLE
 #include "print.h"
 #endif
 
-typedef struct {
-  bool enabled : 1;
-  bool ctl : 1;
-  bool alt : 1;
-  bool gui : 1;
-  bool any : 1;
-} TabbingState;
-
-typedef struct {
-  uint8_t state;
-  uint16_t time;
-  uint16_t timer;
-  uint16_t last_timer;
-  bool enabled : 1;
-  bool running : 1;
-  bool exec : 1;
-  bool caps : 1;
-} StatsState;
-
-typedef struct {
-  bool active : 1;
-  int taps;
-  uint16_t timer;
-} HypeState;
-
-typedef union {
-  struct {
-    uint8_t layer;
-    bool pressed : 1;
-    TabbingState tabbing;
-    StatsState stats;
-    uint16_t snap_tap[2];
-    HypeState hype;
-  };
-} State;
 
 State state = {
   .layer = BASE,
@@ -53,10 +19,10 @@ State state = {
 
 void handle_tabbing(uint16_t kc) {
   if (state.layer == GAME) return;
-
-  if (kc == KC_LCTL || kc == KC_RCTL) state.tabbing.ctl = state.pressed;
-  if (kc == KC_LGUI || kc == KC_RGUI || (kc == KC_LCTL && OS == OS_MAC)) state.tabbing.gui = state.pressed;
-  if (kc == KC_LALT || kc == KC_RALT || (kc == KC_LGUI && OS == OS_MAC)) state.tabbing.alt = state.pressed;
+  
+  if (kc == KC_LCTL) state.tabbing.ctl = state.pressed;
+  if (kc == KC_LGUI) state.tabbing.gui = state.pressed;
+  if (kc == KC_LALT) state.tabbing.alt = state.pressed;
 
   state.tabbing.any = state.tabbing.ctl || state.tabbing.gui || state.tabbing.alt;
 
@@ -64,11 +30,35 @@ void handle_tabbing(uint16_t kc) {
     if (kc != KC_TAB) return;
     if (state.tabbing.enabled) return;
     if (!state.tabbing.any) return;
+    if (OS == OS_MAC) {
+      if (state.tabbing.alt) {
+        unregister_code16(KC_LALT);
+        del_mods(MOD_MASK_ALT_L);
+        register_code16(KC_LGUI);
+      }
+      if (state.tabbing.gui) {
+        unregister_code16(KC_LGUI);
+        del_mods(MOD_MASK_GUI_L);
+        register_code16(KC_LCTL);
+      }
+    }
     layer_move(LOWER);
     state.tabbing.enabled = true;
   } else {
     if (!state.tabbing.enabled) return;
+    
+    if (OS == OS_MAC && kc == KC_LALT) {
+      unregister_code16(KC_LGUI);
+      state.tabbing.alt = false;
+    }
+    if (OS == OS_MAC && kc == KC_LGUI) {
+      unregister_code16(KC_LCTL);
+      state.tabbing.gui = false;
+    }
+    state.tabbing.any = state.tabbing.ctl || state.tabbing.gui || state.tabbing.alt;
+
     if (state.tabbing.any) return;
+    
     layer_move(BASE);
     state.tabbing.enabled = false;
   }

@@ -12,7 +12,6 @@
 #define RGB_RAISE  5,   59,  255
 #define RGB_COMBO  255, 111, 0
 #define RGB_GAME   255, 59,  5
-#define RGB_REMOTE 255, 255, 255
 
 #define RGB_LAYER_INDICATOR_KEY 24
 
