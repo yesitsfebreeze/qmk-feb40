@@ -1,5 +1,5 @@
 #include "src/rgb.h"
-#include "src/core.h"
+#include "src/defines.h"
 
 
 #ifdef RGB_MATRIX_ENABLE

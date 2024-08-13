@@ -1,7 +1,7 @@
 #include QMK_KEYBOARD_H
 #include "keymap.h"
-#include "src/core.h"
 #include "src/rgb.h"
+#include "src/defines.h"
 #include "src/process.h"
 
 uint16_t process_remaps(uint16_t kc, ModState ms) {

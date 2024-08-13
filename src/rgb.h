@@ -1,5 +1,5 @@
 #pragma once
-#include "src/core.h"
+#include "src/defines.h"
 #include QMK_KEYBOARD_H
 
 #define CK_RGB  CK_INTERN_1
