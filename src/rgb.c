@@ -84,7 +84,7 @@ void set_rgb_mode(void) {
   }
 
   uint8_t tmp_layer = last_layer - 1;
-  if (tmp_layer < 0) { 
+  if (tmp_layer < 0) {
     tmp_layer = last_layer + 1;
   }
 
@@ -96,24 +96,19 @@ bool rgb_matrix_indicators_user(void) {
   if (!RGB_INDICATOR) return true;
   uint8_t current_layer = get_highest_layer(layer_state);
   if (current_layer == GAME) {
-    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);  
-    rgb_matrix_set_color(RGB_LAYER_INDICATOR_W - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);  
-    rgb_matrix_set_color(RGB_LAYER_INDICATOR_A - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);  
-    rgb_matrix_set_color(RGB_LAYER_INDICATOR_S - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);  
-    rgb_matrix_set_color(RGB_LAYER_INDICATOR_D - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);  
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_W - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_A - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_S - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);
+    rgb_matrix_set_color(RGB_LAYER_INDICATOR_D - 2, INDICATOR_R, INDICATOR_G, INDICATOR_B);
   } else {
     if (RGB_MODE) {
-      rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);  
+      rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, 0, 0, 0);
     } else {
-      if (OS == OS_MAC) {
-        rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY - 1, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-        rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY + 1, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-      } else {
-        rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
-      }
+      rgb_matrix_set_color(RGB_LAYER_INDICATOR_KEY, INDICATOR_R, INDICATOR_G, INDICATOR_B);
     }
   }
-  
+
   return true;
 }
 
@@ -146,9 +141,9 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 void init_rgb() {
-    layer_color_change(BASE);
-    set_rgb_mode();
-    layer_move(BASE);
+  layer_color_change(BASE);
+  set_rgb_mode();
+  layer_move(BASE);
 }
 
 bool handle_rgb(uint16_t kc, keyrecord_t *rec) {
@@ -157,9 +152,9 @@ bool handle_rgb(uint16_t kc, keyrecord_t *rec) {
 
     if (kc == CK_RGB) RGB_MODE = !RGB_MODE;
     if (kc == CK_RGBI) RGB_INDICATOR = !RGB_INDICATOR;
-    
+
     set_rgb_mode();
-    
+
     return true;
   return false;
 }

@@ -4,15 +4,9 @@
 enum LAYERS {
   BASE,
   LOWER,
-  RAISE,  
+  RAISE,
   COMBO,
   GAME,
-};
-
-enum OS_TYPES {
-  OS_WIN,
-  OS_MAC,
-  OS_LST
 };
 
 #define LT_L LT(1, KC_SPC)
@@ -20,7 +14,6 @@ enum OS_TYPES {
 #define LT_C LT(3, KC_SPC)
 
 #define xxxxxxx KC_NO
-#define CK_OS  QK_USER_31
 #define CK_NO  QK_UNICODE_MAX
 
 #define CK_00 QK_KB_0
@@ -138,7 +131,8 @@ typedef struct {
 
 typedef struct {
   bool active : 1;
-  int taps;
+  bool pressed : 1;
+  bool interrupt : 1;
   uint16_t timer;
 } HypeState;
 
@@ -156,4 +150,3 @@ typedef union {
 } State;
 
 extern State state;
-extern int8_t OS;
