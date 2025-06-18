@@ -247,6 +247,7 @@ bool handle_hype(uint16_t kc) {
     state.hype.timer = timer_read();
   } else {
     state.hype.active = false;
+    unregister_code16(KC_LCTL);
   }
 
   return true;
@@ -256,7 +257,6 @@ void process_hype(void) {
   uint16_t elapsed = timer_elapsed(state.hype.timer);
 
   if (!state.hype.pressed) {
-    unregister_code16(KC_LCTL);
     if (state.hype.interrupt) {
       return;
     }
